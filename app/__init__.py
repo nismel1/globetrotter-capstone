@@ -4,12 +4,17 @@ app/__init__.py
 Flask application factory.
 """
 import os
-from flask import Flask
+from flask import Flask, render_template
+from flask import send_from_directory
 
 
 def create_app():
     """Create and configure the Flask application."""
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder="static",
+        static_url_path="/static",
+    )
 
     # Secret key used for JWT signing.  Set the SECRET_KEY environment variable
     # in production.  The fallback is intentionally weak and must never be used
@@ -28,5 +33,16 @@ def create_app():
     app.register_blueprint(destinations_bp)
     app.register_blueprint(recommendations_bp)
     app.register_blueprint(itineraries_bp)
+
+    @app.route("/", methods=["GET"])
+    def home():
+        """Render the GlobeTrotter web experience."""
+        return render_template("index.html")
+
+    @app.route("/assets/<path:filename>", methods=["GET"])
+    def assets(filename):
+        """Serve project images provided in the root img/img directory."""
+        assets_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "img", "img")
+        return send_from_directory(assets_dir, filename)
 
     return app

@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Bali",
+    "country": "Indonésie",
+    "continent": "Asie",
+    "description": "Rizières, temples, plages chaudes et retraites bien-être pour un voyage doux mais dépaysant.",
+    "tags": ["beach", "nature", "wellness", "food"],
+    "avg_cost_per_day": 78,
+    "image": "g1.jpg"
+  },
+  {
+    "name": "Marrakech",
+    "country": "Maroc",
+    "continent": "Afrique",
+    "description": "Souks, riads, jardins et excursions vers l'Atlas pour une immersion sensorielle intense.",
+    "tags": ["culture", "food", "adventure", "romance"],
+    "avg_cost_per_day": 64,
+    "image": "g2.jpg"
+  },
+  {
+    "name": "Santorini",
+    "country": "Grèce",
+    "continent": "Europe",
+    "description": "Falaises volcaniques, couchers de soleil et villages blancs face à la mer Égée.",
+    "tags": ["beach", "romance", "culture"],
+    "avg_cost_per_day": 145,
+    "image": "g3.jpg"
+  },
+  {
+    "name": "Kyoto",
+    "country": "Japon",
+    "continent": "Asie",
+    "description": "Temples, maisons de thé, bambouseraies et saisons spectaculaires pour voyageurs curieux.",
+    "tags": ["culture", "food", "nature"],
+    "avg_cost_per_day": 132,
+    "image": "g4.jpg"
+  },
+  {
+    "name": "Lisbonne",
+    "country": "Portugal",
+    "continent": "Europe",
+    "description": "Tramways, azulejos, belvédères et cuisine atlantique dans une capitale lumineuse.",
+    "tags": ["culture", "food", "beach"],
+    "avg_cost_per_day": 98,
+    "image": "g5.jpg"
+  },
+  {
+    "name": "Cape Town",
+    "country": "Afrique du Sud",
+    "continent": "Afrique",
+    "description": "Montagne, océan, vignobles et routes panoramiques pour les amateurs de grands paysages.",
+    "tags": ["nature", "adventure", "food", "beach"],
+    "avg_cost_per_day": 91,
+    "image": "g6.jpg"
+  },
+  {
+    "name": "Paris",
+    "country": "France",
+    "continent": "Europe",
+    "description": "Musées, promenades, pâtisseries et quartiers vivants pour un séjour culturel iconique.",
+    "tags": ["culture", "food", "romance"],
+    "avg_cost_per_day": 156,
+    "image": "g7.jpg"
+  },
+  {
+    "name": "Cusco",
+    "country": "Pérou",
+    "continent": "Amérique du Sud",
+    "description": "Portes des Andes, marchés colorés et départ idéal vers la Vallée sacrée.",
+    "tags": ["adventure", "culture", "nature"],
+    "avg_cost_per_day": 59,
+    "image": "g8.jpg"
+  },
+  {
+    "name": "Reykjavik",
+    "country": "Islande",
+    "continent": "Europe",
+    "description": "Sources chaudes, volcans, cascades et aurores pour explorer une nature brute.",
+    "tags": ["nature", "adventure", "wellness"],
+    "avg_cost_per_day": 178,
+    "image": "g9.jpg"
+  }
+]
