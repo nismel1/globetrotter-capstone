@@ -12,7 +12,8 @@ def create_app():
     """Create and configure the Flask application."""
     app = Flask(
         __name__,
-        static_folder="static",
+        template_folder="Frontend/react",
+        static_folder="Frontend",
         static_url_path="/static",
     )
 
@@ -28,11 +29,15 @@ def create_app():
     from app.destinations import destinations_bp
     from app.recommendations import recommendations_bp
     from app.itineraries import itineraries_bp
+    from app.reviews import bp as reviews_bp
+    from app.proposals import bp as proposals_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(destinations_bp)
     app.register_blueprint(recommendations_bp)
     app.register_blueprint(itineraries_bp)
+    app.register_blueprint(reviews_bp)
+    app.register_blueprint(proposals_bp)
 
     @app.route("/", methods=["GET"])
     def home():
@@ -41,8 +46,8 @@ def create_app():
 
     @app.route("/assets/<path:filename>", methods=["GET"])
     def assets(filename):
-        """Serve project images provided in the root img/img directory."""
-        assets_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "img", "img")
+        """Serve project images provided in the root img directory."""
+        assets_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "img")
         return send_from_directory(assets_dir, filename)
 
     return app

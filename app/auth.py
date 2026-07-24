@@ -57,6 +57,20 @@ def get_current_user(request_obj) -> str | None:
         return None
 
 
+def token_required(f):
+    """Decorator to require a valid JWT token for a route."""
+    from functools import wraps
+    
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        username = get_current_user(request)
+        if not username:
+            return jsonify({"error": "Token is missing or invalid"}), 401
+        return f(username, *args, **kwargs)
+    
+    return decorated_function
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
