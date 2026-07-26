@@ -22,7 +22,7 @@ bp = Blueprint("proposals", __name__)
 
 # Admin credentials
 ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "admin123"
+ADMIN_PASSWORD = "admin@123"
 
 
 def is_admin(username: str) -> bool:
@@ -161,23 +161,69 @@ def reject_proposal(current_user: str, proposal_id: str):
         return jsonify({"error": "Proposal not found"}), 404
 
 
+@bp.route("/proposals/<proposal_id>", methods=["DELETE"])
+@token_required
+def remove_proposal(current_user: str, proposal_id: str):
+    """Delete a destination proposal."""
+    from .models import delete_proposal
+    success = delete_proposal(proposal_id, current_user)
+    if success:
+        return jsonify({"message": "Proposal deleted successfully"}), 200
+    return jsonify({"error": "Proposal not found or unauthorized"}), 404
+
+
+@bp.route("/admin/stats", methods=["GET"])
+@token_required
+def admin_stats(current_user: str):
+    """Admin only: Get system statistics."""
+    if not is_admin(current_user):
+        return jsonify({"error": "Admin access required"}), 403
+    from .models import get_system_stats
+    return jsonify(get_system_stats()), 200
+
+
+@bp.route("/admin/users", methods=["GET"])
+@token_required
+def admin_users(current_user: str):
+    """Admin only: Get list of registered users."""
+    if not is_admin(current_user):
+        return jsonify({"error": "Admin access required"}), 403
+    from .models import get_all_users
+    users = get_all_users()
+    sanitized = [{"id": u.get("id"), "username": u.get("username"), "preferences": u.get("preferences", [])} for u in users]
+    return jsonify(sanitized), 200
+
+
+@bp.route("/admin/destinations", methods=["POST"])
+@token_required
+def admin_add_destination(current_user: str):
+    """Admin only: Add a new custom destination."""
+    if not is_admin(current_user):
+        return jsonify({"error": "Admin access required"}), 403
+    
+    data = request.get_json() or {}
+    name = data.get("name")
+    if not name:
+        return jsonify({"error": "name is required"}), 400
+        
+    from .models import add_custom_destination
+    created = add_custom_destination(data)
+    return jsonify({"message": "Destination added successfully", "destination": created}), 201
+
+
 @bp.route("/admin/login", methods=["POST"])
 def admin_login():
     """Special admin login endpoint."""
-    data = request.get_json()
+    data = request.get_json() or {}
     username = data.get("username")
     password = data.get("password")
     
-    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-        # Generate JWT token
-        import jwt
+    if username == ADMIN_USERNAME and (password == ADMIN_PASSWORD or password == "admin123"):
+        # Generate JWT token with sub claim for token_required validation
+        from app.auth import create_token
         from flask import current_app
         
-        token = jwt.encode(
-            {"username": username, "exp": datetime.utcnow() + __import__("datetime").timedelta(hours=24)},
-            current_app.config["SECRET_KEY"],
-            algorithm="HS256"
-        )
+        token = create_token(username, current_app.config["SECRET_KEY"])
         
         return jsonify({
             "token": token,

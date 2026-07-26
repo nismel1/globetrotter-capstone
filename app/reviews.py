@@ -78,13 +78,36 @@ def create_review(current_user: str):
 @bp.route("/reviews/<review_id>", methods=["DELETE"])
 @token_required
 def remove_review(current_user: str, review_id: str):
-    """Delete a review (only if it belongs to current user)."""
+    """Delete a review (only if it belongs to current user or admin)."""
     success = delete_review(review_id, current_user)
     
     if success:
         return jsonify({"message": "Review deleted"}), 200
     else:
         return jsonify({"error": "Review not found or unauthorized"}), 404
+
+
+@bp.route("/reviews/<review_id>", methods=["PUT"])
+@token_required
+def edit_review(current_user: str, review_id: str):
+    """Edit a review (only if it belongs to current user or admin)."""
+    data = request.get_json() or {}
+    rating = data.get("rating")
+    comment = data.get("comment")
+    
+    all_reviews = get_all_reviews()
+    for review in all_reviews:
+        if review.get("id") == review_id and (review.get("username") == current_user or current_user == "admin"):
+            if rating is not None and isinstance(rating, (int, float)) and 1 <= rating <= 5:
+                review["rating"] = float(rating)
+            if comment:
+                review["comment"] = comment.strip()
+            review["updated_at"] = datetime.utcnow().isoformat()
+            from .models import _write_json, REVIEWS_FILE
+            _write_json(REVIEWS_FILE, all_reviews)
+            return jsonify(review), 200
+            
+    return jsonify({"error": "Review not found or unauthorized"}), 404
 
 
 # ---------------------------------------------------------------------------

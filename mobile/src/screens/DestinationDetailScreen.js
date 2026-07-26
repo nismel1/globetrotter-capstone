@@ -156,9 +156,14 @@ const DestinationDetailScreen = ({ route, navigation }) => {
     );
   };
 
-  const imageSource = destination.image
-    ? { uri: `http://10.0.2.2:5000/assets/${destination.image}` }
-    : require('../assets/placeholder.jpg');
+  let imageSource = require('../assets/placeholder.jpg');
+  if (destination.image) {
+    if (typeof destination.image === 'string' && (destination.image.startsWith('http://') || destination.image.startsWith('https://'))) {
+      imageSource = { uri: destination.image };
+    } else {
+      imageSource = { uri: `http://10.0.2.2:5000/assets/${destination.image}` };
+    }
+  }
 
   const galleryImages = [
     require('../assets/gallery1.jpg'),

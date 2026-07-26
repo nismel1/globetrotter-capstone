@@ -3,6 +3,11 @@ Tests automatisés pour l'API Globetrotter
 """
 import sys
 import os
+import io
+
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
 import requests
 import json
 from datetime import datetime
@@ -22,7 +27,7 @@ ADMIN_USER = {
 # Variables globales pour les tests
 user_token = None
 admin_token = None
-test_destination_name = "Bali"
+test_destination_name = "Le Bar Royal Zèbre"
 test_review_id = None
 test_proposal_id = None
 
@@ -143,7 +148,7 @@ def test_search_destinations():
     
     response = requests.get(
         f"{BASE_URL}/destinations",
-        params={"q": "bali", "tag": "nature"}
+        params={"q": "royal", "tag": "food"}
     )
     
     if response.status_code == 200:

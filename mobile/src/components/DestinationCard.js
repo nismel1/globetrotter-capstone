@@ -4,9 +4,14 @@ import Icon from 'react-native-vector-icons/Feather';
 import { COLORS, SPACING, RADIUS, SHADOWS, TYPOGRAPHY } from '../config/theme';
 
 const DestinationCard = ({ destination, isFavorite, onPress, onToggleFavorite }) => {
-  const imageSource = destination.image 
-    ? { uri: `http://10.0.2.2:5000/assets/${destination.image}` }
-    : require('../assets/placeholder.jpg');
+  let imageSource = require('../assets/placeholder.jpg');
+  if (destination.image) {
+    if (typeof destination.image === 'string' && (destination.image.startsWith('http://') || destination.image.startsWith('https://'))) {
+      imageSource = { uri: destination.image };
+    } else {
+      imageSource = { uri: `http://10.0.2.2:5000/assets/${destination.image}` };
+    }
+  }
 
   return (
     <TouchableOpacity 

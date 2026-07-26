@@ -16,7 +16,34 @@ import datetime
 from flask import Blueprint, request, jsonify
 
 from app.auth import get_current_user
-from app.models import get_itineraries_for_user, save_itinerary
+from app.models import get_itineraries_for_user, save_itinerary, delete_itinerary, update_itinerary
+
+
+@itineraries_bp.route("/itineraries/<itinerary_id>", methods=["DELETE"])
+def delete_itinerary_route(itinerary_id: str):
+    """Delete an itinerary."""
+    username = get_current_user(request)
+    if not username:
+        return jsonify({"error": "authentication required"}), 401
+
+    success = delete_itinerary(itinerary_id, username)
+    if success:
+        return jsonify({"message": "Itinerary deleted successfully"}), 200
+    return jsonify({"error": "Itinerary not found or unauthorized"}), 404
+
+
+@itineraries_bp.route("/itineraries/<itinerary_id>", methods=["PUT"])
+def update_itinerary_route(itinerary_id: str):
+    """Update an itinerary."""
+    username = get_current_user(request)
+    if not username:
+        return jsonify({"error": "authentication required"}), 401
+
+    data = request.get_json(silent=True) or {}
+    success = update_itinerary(itinerary_id, username, data)
+    if success:
+        return jsonify({"message": "Itinerary updated successfully"}), 200
+    return jsonify({"error": "Itinerary not found or unauthorized"}), 404
 
 itineraries_bp = Blueprint("itineraries", __name__)
 
