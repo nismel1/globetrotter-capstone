@@ -19,6 +19,9 @@ from app.auth import get_current_user
 from app.models import get_itineraries_for_user, save_itinerary, delete_itinerary, update_itinerary
 
 
+itineraries_bp = Blueprint("itineraries", __name__)
+
+
 @itineraries_bp.route("/itineraries/<itinerary_id>", methods=["DELETE"])
 def delete_itinerary_route(itinerary_id: str):
     """Delete an itinerary."""
@@ -44,8 +47,6 @@ def update_itinerary_route(itinerary_id: str):
     if success:
         return jsonify({"message": "Itinerary updated successfully"}), 200
     return jsonify({"error": "Itinerary not found or unauthorized"}), 404
-
-itineraries_bp = Blueprint("itineraries", __name__)
 
 
 @itineraries_bp.route("/itineraries", methods=["POST"])
