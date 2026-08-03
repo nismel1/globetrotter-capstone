@@ -1,5 +1,5 @@
 """
-Tests automatisés pour l'API Globetrotter
+Tests automatises pour l'API Globetrotter
 """
 import sys
 import os
@@ -27,7 +27,7 @@ ADMIN_USER = {
 # Variables globales pour les tests
 user_token = None
 admin_token = None
-test_destination_name = "Le Bar Royal Zèbre"
+test_destination_name = "Baie des Rois"
 test_review_id = None
 test_proposal_id = None
 
@@ -41,22 +41,22 @@ RESET = '\033[0m'
 
 def print_test(test_name):
     """Afficher le nom du test."""
-    print(f"\n{BLUE}🧪 Test: {test_name}{RESET}")
+    print(f"\n{BLUE}eeee Test: {test_name}{RESET}")
 
 
 def print_success(message):
-    """Afficher un succès."""
-    print(f"{GREEN}✅ {message}{RESET}")
+    """Afficher un succes."""
+    print(f"{GREEN}eee {message}{RESET}")
 
 
 def print_error(message):
     """Afficher une erreur."""
-    print(f"{RED}❌ {message}{RESET}")
+    print(f"{RED}ee {message}{RESET}")
 
 
 def print_info(message):
     """Afficher une info."""
-    print(f"{YELLOW}ℹ️  {message}{RESET}")
+    print(f"{YELLOW}eeee  {message}{RESET}")
 
 
 # =============================================================================
@@ -73,10 +73,10 @@ def test_register():
     )
     
     if response.status_code == 201:
-        print_success("Utilisateur créé avec succès")
+        print_success("Utilisateur cree avec succes")
         return True
     else:
-        print_error(f"Échec de l'inscription: {response.json()}")
+        print_error(f"eechec de l'inscription: {response.json()}")
         return False
 
 
@@ -96,10 +96,10 @@ def test_login():
     if response.status_code == 200:
         data = response.json()
         user_token = data.get("token")
-        print_success(f"Connexion réussie - Token: {user_token[:20]}...")
+        print_success(f"Connexion reussie - Token: {user_token[:20]}...")
         return True
     else:
-        print_error(f"Échec de la connexion: {response.json()}")
+        print_error(f"eechec de la connexion: {response.json()}")
         return False
 
 
@@ -116,10 +116,10 @@ def test_admin_login():
     if response.status_code == 200:
         data = response.json()
         admin_token = data.get("token")
-        print_success(f"Admin connecté - Token: {admin_token[:20]}...")
+        print_success(f"Admin connecte - Token: {admin_token[:20]}...")
         return True
     else:
-        print_error(f"Échec connexion admin: {response.json()}")
+        print_error(f"eechec connexion admin: {response.json()}")
         return False
 
 
@@ -128,17 +128,17 @@ def test_admin_login():
 # =============================================================================
 
 def test_get_destinations():
-    """Test 4: Récupérer la liste des destinations"""
-    print_test("Récupération des destinations")
+    """Test 4: Recuperer la liste des destinations"""
+    print_test("Recuperation des destinations")
     
     response = requests.get(f"{BASE_URL}/destinations")
     
     if response.status_code == 200:
         destinations = response.json()
-        print_success(f"Liste récupérée - {len(destinations)} destinations")
+        print_success(f"Liste recuperee - {len(destinations)} destinations")
         return True
     else:
-        print_error(f"Échec: {response.status_code}")
+        print_error(f"eechec: {response.status_code}")
         return False
 
 
@@ -153,10 +153,10 @@ def test_search_destinations():
     
     if response.status_code == 200:
         results = response.json()
-        print_success(f"Recherche réussie - {len(results)} résultats")
+        print_success(f"Recherche reussie - {len(results)} resultats")
         return True
     else:
-        print_error(f"Échec: {response.status_code}")
+        print_error(f"eechec: {response.status_code}")
         return False
 
 
@@ -165,9 +165,9 @@ def test_search_destinations():
 # =============================================================================
 
 def test_create_review():
-    """Test 6: Créer un avis"""
+    """Test 6: Creer un avis"""
     global test_review_id
-    print_test("Création d'un avis")
+    print_test("Creation d'un avis")
     
     if not user_token:
         print_error("Token utilisateur manquant")
@@ -179,23 +179,23 @@ def test_create_review():
         json={
             "destination_name": test_destination_name,
             "rating": 5,
-            "comment": "Test automatisé - Destination incroyable !"
+            "comment": "Test automatise - Destination incroyable !"
         }
     )
     
     if response.status_code == 201:
         data = response.json()
         test_review_id = data.get("id")
-        print_success(f"Avis créé - ID: {test_review_id}")
+        print_success(f"Avis cree - ID: {test_review_id}")
         return True
     else:
-        print_error(f"Échec: {response.json()}")
+        print_error(f"eechec: {response.json()}")
         return False
 
 
 def test_get_reviews():
-    """Test 7: Récupérer les avis d'une destination"""
-    print_test("Récupération des avis")
+    """Test 7: Recuperer les avis d'une destination"""
+    print_test("Recuperation des avis")
     
     response = requests.get(
         f"{BASE_URL}/reviews",
@@ -204,10 +204,10 @@ def test_get_reviews():
     
     if response.status_code == 200:
         reviews = response.json()
-        print_success(f"Avis récupérés - {len(reviews)} avis")
+        print_success(f"Avis recuperes - {len(reviews)} avis")
         return True
     else:
-        print_error(f"Échec: {response.status_code}")
+        print_error(f"eechec: {response.status_code}")
         return False
 
 
@@ -225,10 +225,10 @@ def test_delete_review():
     )
     
     if response.status_code == 200:
-        print_success("Avis supprimé")
+        print_success("Avis supprime")
         return True
     else:
-        print_error(f"Échec: {response.json()}")
+        print_error(f"eechec: {response.json()}")
         return False
 
 
@@ -237,8 +237,8 @@ def test_delete_review():
 # =============================================================================
 
 def test_mark_visited():
-    """Test 9: Marquer une destination comme visitée"""
-    print_test("Marquer comme visité")
+    """Test 9: Marquer une destination comme visitee"""
+    print_test("Marquer comme visite")
     
     if not user_token:
         print_error("Token manquant")
@@ -251,16 +251,16 @@ def test_mark_visited():
     )
     
     if response.status_code == 200:
-        print_success(f"{test_destination_name} marqué comme visité")
+        print_success(f"{test_destination_name} marque comme visite")
         return True
     else:
-        print_error(f"Échec: {response.json()}")
+        print_error(f"eechec: {response.json()}")
         return False
 
 
 def test_get_visited():
-    """Test 10: Récupérer les destinations visitées"""
-    print_test("Récupération des destinations visitées")
+    """Test 10: Recuperer les destinations visitees"""
+    print_test("Recuperation des destinations visitees")
     
     if not user_token:
         print_error("Token manquant")
@@ -273,10 +273,10 @@ def test_get_visited():
     
     if response.status_code == 200:
         visited = response.json()
-        print_success(f"Liste récupérée - {len(visited)} destinations")
+        print_success(f"Liste recuperee - {len(visited)} destinations")
         return True
     else:
-        print_error(f"Échec: {response.status_code}")
+        print_error(f"eechec: {response.status_code}")
         return False
 
 
@@ -285,8 +285,8 @@ def test_get_visited():
 # =============================================================================
 
 def test_create_favorite_note():
-    """Test 11: Créer une note sur un favori"""
-    print_test("Création d'une note personnelle")
+    """Test 11: Creer une note sur un favori"""
+    print_test("Creation d'une note personnelle")
     
     if not user_token:
         print_error("Token manquant")
@@ -297,24 +297,24 @@ def test_create_favorite_note():
         headers={"Authorization": f"Bearer {user_token}"},
         json={
             "destination_name": test_destination_name,
-            "note": "Test automatisé - Je veux visiter en été",
-            "visit_date": "Été 2025",
+            "note": "Test automatise - Je veux visiter en ete",
+            "visit_date": "eete 2025",
             "companions": "En famille",
             "budget": 3000
         }
     )
     
     if response.status_code == 200:
-        print_success("Note créée avec succès")
+        print_success("Note creee avec succes")
         return True
     else:
-        print_error(f"Échec: {response.json()}")
+        print_error(f"eechec: {response.json()}")
         return False
 
 
 def test_get_favorite_notes():
-    """Test 12: Récupérer les notes"""
-    print_test("Récupération des notes")
+    """Test 12: Recuperer les notes"""
+    print_test("Recuperation des notes")
     
     if not user_token:
         print_error("Token manquant")
@@ -327,10 +327,10 @@ def test_get_favorite_notes():
     
     if response.status_code == 200:
         notes = response.json()
-        print_success(f"Notes récupérées - {len(notes)} notes")
+        print_success(f"Notes recuperees - {len(notes)} notes")
         return True
     else:
-        print_error(f"Échec: {response.status_code}")
+        print_error(f"eechec: {response.status_code}")
         return False
 
 
@@ -354,7 +354,7 @@ def test_submit_proposal():
             "name": "Test Destination",
             "country": "Test Country",
             "continent": "Test Continent",
-            "description": "Ceci est une destination de test automatisé",
+            "description": "Ceci est une destination de test automatise",
             "tags": ["test", "automation"],
             "avg_cost_per_day": 100
         }
@@ -366,13 +366,13 @@ def test_submit_proposal():
         print_success(f"Proposition soumise - ID: {test_proposal_id}")
         return True
     else:
-        print_error(f"Échec: {response.json()}")
+        print_error(f"eechec: {response.json()}")
         return False
 
 
 def test_get_user_proposals():
-    """Test 14: Récupérer ses propositions"""
-    print_test("Récupération des propositions utilisateur")
+    """Test 14: Recuperer ses propositions"""
+    print_test("Recuperation des propositions utilisateur")
     
     if not user_token:
         print_error("Token manquant")
@@ -385,16 +385,16 @@ def test_get_user_proposals():
     
     if response.status_code == 200:
         proposals = response.json()
-        print_success(f"Propositions récupérées - {len(proposals)} propositions")
+        print_success(f"Propositions recuperees - {len(proposals)} propositions")
         return True
     else:
-        print_error(f"Échec: {response.status_code}")
+        print_error(f"eechec: {response.status_code}")
         return False
 
 
 def test_admin_get_proposals():
-    """Test 15: Admin - Récupérer toutes les propositions"""
-    print_test("Admin - Récupération de toutes les propositions")
+    """Test 15: Admin - Recuperer toutes les propositions"""
+    print_test("Admin - Recuperation de toutes les propositions")
     
     if not admin_token:
         print_error("Token admin manquant")
@@ -411,7 +411,7 @@ def test_admin_get_proposals():
         print_success(f"Propositions en attente - {len(proposals)} propositions")
         return True
     else:
-        print_error(f"Échec: {response.json()}")
+        print_error(f"eechec: {response.json()}")
         return False
 
 
@@ -426,25 +426,25 @@ def test_admin_approve_proposal():
     response = requests.post(
         f"{BASE_URL}/admin/proposals/{test_proposal_id}/approve",
         headers={"Authorization": f"Bearer {admin_token}"},
-        json={"comment": "Test automatisé - Approuvé"}
+        json={"comment": "Test automatise - Approuve"}
     )
     
     if response.status_code == 200:
-        print_success("Proposition approuvée et ajoutée aux destinations")
+        print_success("Proposition approuvee et ajoutee aux destinations")
         return True
     else:
-        print_error(f"Échec: {response.json()}")
+        print_error(f"eechec: {response.json()}")
         return False
 
 
 # =============================================================================
-# EXÉCUTION DES TESTS
+# EXeeCUTION DES TESTS
 # =============================================================================
 
 def run_all_tests():
-    """Exécuter tous les tests"""
+    """Executer tous les tests"""
     print(f"\n{BLUE}{'='*60}")
-    print(f"🚀 TESTS AUTOMATISÉS - GLOBETROTTER API")
+    print(f"eeee TESTS AUTOMATISeeS - GLOBETROTTER API")
     print(f"{'='*60}{RESET}\n")
     
     print_info(f"URL de base: {BASE_URL}")
@@ -461,16 +461,16 @@ def run_all_tests():
         ("Recherche destinations", test_search_destinations),
         
         # Reviews
-        ("Créer avis", test_create_review),
+        ("Creer avis", test_create_review),
         ("Lister avis", test_get_reviews),
         ("Supprimer avis", test_delete_review),
         
         # Visited
-        ("Marquer visité", test_mark_visited),
-        ("Lister visités", test_get_visited),
+        ("Marquer visite", test_mark_visited),
+        ("Lister visites", test_get_visited),
         
         # Favorite Notes
-        ("Créer note", test_create_favorite_note),
+        ("Creer note", test_create_favorite_note),
         ("Lister notes", test_get_favorite_notes),
         
         # Proposals
@@ -494,22 +494,22 @@ def run_all_tests():
             print_error(f"Exception: {str(e)}")
             failed += 1
     
-    # Résumé
+    # Resume
     print(f"\n{BLUE}{'='*60}")
-    print(f"📊 RÉSUMÉ DES TESTS")
+    print(f"eeee ReeSUMee DES TESTS")
     print(f"{'='*60}{RESET}\n")
     
     total = passed + failed
     success_rate = (passed / total * 100) if total > 0 else 0
     
-    print(f"{GREEN}✅ Tests réussis: {passed}/{total}{RESET}")
-    print(f"{RED}❌ Tests échoués: {failed}/{total}{RESET}")
-    print(f"{YELLOW}📈 Taux de réussite: {success_rate:.1f}%{RESET}\n")
+    print(f"{GREEN}eee Tests reussis: {passed}/{total}{RESET}")
+    print(f"{RED}ee Tests echoues: {failed}/{total}{RESET}")
+    print(f"{YELLOW}eeee Taux de reussite: {success_rate:.1f}%{RESET}\n")
     
     if failed == 0:
-        print(f"{GREEN}🎉 TOUS LES TESTS SONT PASSÉS !{RESET}\n")
+        print(f"{GREEN}eeee TOUS LES TESTS SONT PASSeeS !{RESET}\n")
     else:
-        print(f"{RED}⚠️  CERTAINS TESTS ONT ÉCHOUÉ{RESET}\n")
+        print(f"{RED}eeee  CERTAINS TESTS ONT eeCHOUee{RESET}\n")
     
     return failed == 0
 
@@ -524,3 +524,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n{RED}Erreur fatale: {str(e)}{RESET}\n")
         sys.exit(1)
+

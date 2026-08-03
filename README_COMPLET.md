@@ -197,6 +197,26 @@ mobile/src/
     └── theme.js          # Couleurs et styles
 ```
 
+### Frontend Web (Flutter) — Nouveau
+```
+flutter_web/
+├── lib/
+│   ├── main.dart                  # Point d'entrée, thème, providers, routage
+│   ├── config/                    # Design system Gabon (theme.dart, app_config.dart)
+│   ├── models/                    # Destination, Itinerary, Review, Proposal, User
+│   ├── providers/                 # AuthProvider, AppProvider (state management)
+│   ├── services/                  # api_service.dart (client API complet avec JWT)
+│   ├── screens/                   # 12+ écrans (auth, accueil, explorer, détail, favoris, 
+│   │                                itinéraires, recommandations, événements, 
+│   │                                propositions, admin, profil, navigation)
+│   ├── navigation/                # Shell responsive (bottom nav mobile / sidebar desktop)
+│   └── widgets/                   # Widgets communs + motifs décoratifs gabonais
+├── web/                           # index.html, manifest.json, icons PWA
+├── test/                          # Tests widget
+├── assets/                        # Ressources locales
+└── pubspec.yaml                   # Dépendances (http, provider, shared_preferences, intl)
+```
+
 ### Data (JSON Storage)
 ```
 data/
@@ -245,6 +265,38 @@ python app\main.py
 #### 3. Accès
 - **Interface Web** : http://localhost:5000
 - **API** : http://localhost:5000/api/...
+
+### Application Web Flutter (Nouveau)
+
+#### 1. Installation
+```bash
+# Prérequis : Flutter SDK (>= 3.10.1)
+cd flutter_web
+flutter pub get
+```
+
+#### 2. Configuration API
+Dans `lib/config/app_config.dart` :
+```dart
+static const String apiBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://localhost:5000',
+);
+```
+
+#### 3. Lancement (développement)
+```bash
+cd flutter_web
+flutter run -d chrome   # http://localhost:8080
+```
+
+#### 4. Build production
+```bash
+cd flutter_web
+flutter build web
+# Flask sert automatiquement le build dans flutter_web/build/web/
+python ../app/main.py   # http://localhost:5000
+```
 
 ### Application Mobile React Native
 

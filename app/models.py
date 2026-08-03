@@ -31,6 +31,70 @@ _POIS_CACHE = {
 }
 
 
+def _get_poi_image_url(poi: dict) -> str:
+    """Return the correct local image URL from the img/ folder for a POI.
+
+    Maps each POI (by name) to the actual image file available in the
+    project's img/ directory, served via the /assets/<path> route.
+    """
+    image_url = poi.get("image_url") or ""
+    if image_url and (
+        image_url.startswith("http://")
+        or image_url.startswith("https://")
+        or image_url.startswith("data:")
+    ):
+        return image_url
+
+    # Map each POI (by French name) to its matching image file in img/
+    name = (poi.get("name_fr") or poi.get("name", "")).strip()
+    img_map = {
+        "Baie des Rois": "Baie des rois zone nord.jpg",
+        "Baie des Tortues": "La baie des tortues 🐢🇬🇦.jpg",
+        "Plage de Leon Mba": "plage-leon-mba.jpeg",
+        "Institut francais du Gabon": "Le Musée National - Le Pratique du Gabon.jpg",
+        "Parc national d'Akanda": "Gabon safari – 10 days Lopé and Loango.jpg",
+        "Gymnase d'Oloumi": "Libreville.jpg",
+        "Marche de Nkembo": "marchéMontbouet.jpg",
+        "Marche de Mont-Bouet": "marché-mont-bouet.jpg",
+        "Marche de Venez Voir": "Grand Marché Mosquée Ligne 1 pointe noire.jpg",
+        "Parc national de Pongara": "Gabon safari – 10 days Lopé and Loango.jpg",
+        "Carrefour Leon Mba": "Léon mba.jpg",
+        "Boulevard Triomphal": "Libreville bord de mer.jpg",
+        "Tsunami": "Tsunami du Gabon.jpg",
+        "Pointe Denis Beach": "La baie des tortues 🐢🇬🇦 (1).jpg",
+        "Arboretum de Raponda Walker": "Arboretum Raponda Walker _Bois des Geants_.jpg",
+        "Plage de Cap Esterias": "Plage de Léon MBA _.jpg",
+        "Pointe Indienne": "ce soir 🌿🌠 chantier de la baie des rois.jpg",
+        "Plage de Panga": "La baie des tortues 🐢🇬🇦.jpg",
+        "Gabon 9 Provinces": "J’aime le Gabon🇬🇦.jpg",
+        "Gabon 9 Provinces - concert gratuit": "J’aime le Gabon🇬🇦.jpg",
+        "Circuit Libreville Terrain": "Pont de la baie des rois.jpg",
+        "Circuit d'excursion terrain a Libreville": "Pont de la baie des rois.jpg",
+    }
+
+    filename = img_map.get(name)
+    if not filename:
+        # Also try matching by the plain English name
+        filename = img_map.get((poi.get("name") or "").strip())
+    if filename:
+        from urllib.parse import quote
+        return f"/assets/{quote(filename)}"
+
+    # Fallback: use a generic Unsplash image based on category
+    category = (poi.get("category") or "").lower()
+    theme_map = {
+        "beach": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80",
+        "park": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80",
+        "market": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1400&q=80",
+        "event": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1400&q=80",
+        "bar": "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1400&q=80",
+        "restaurant": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=80",
+        "attraction": "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&w=1400&q=80",
+        "excursion": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=80",
+    }
+    return theme_map.get(category, "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1400&q=80")
+
+
 def _load_pois_destinations() -> list:
     """Load POIs from pois.json, transforming them into Destination objects.
     Uses in-memory caching based on file modification timestamp (mtime).
@@ -46,7 +110,7 @@ def _load_pois_destinations() -> list:
     if _POIS_CACHE["mtime"] == current_mtime and _POIS_CACHE["destinations"]:
         return _POIS_CACHE["destinations"]
 
-    with open(POIS_FILE, "r", encoding="utf-8") as fh:
+    with open(POIS_FILE, "r", encoding="utf-8-sig") as fh:
         raw_data = json.load(fh)
         pois = raw_data.get("pois", [])
 
@@ -55,9 +119,13 @@ def _load_pois_destinations() -> list:
         "restaurant": ["food", "culture"],
         "park": ["nature", "wellness", "adventure"],
         "attraction": ["culture", "nature", "adventure"],
-        "mall": ["shopping", "food", "culture"]
+        "mall": ["shopping", "food", "culture"],
+        "beach": ["beach", "nature", "relaxation"],
+        "market": ["shopping", "culture", "food"],
+        "event": ["event", "culture", "music"],
+        "excursion": ["adventure", "nature", "culture"],
     }
-    price_costs = {"budget": 35, "moderate": 75, "luxury": 150}
+    price_costs = {"free": 0, "budget": 5000, "mid": 15000, "moderate": 15000, "luxury": 35000}
 
     destinations = []
     for poi in pois:
@@ -72,7 +140,7 @@ def _load_pois_destinations() -> list:
             "name_en": poi.get("name", "") or poi.get("name_fr", ""),
             "name_fr": poi.get("name_fr", "") or poi.get("name", ""),
             "original_name": poi.get("name", ""),
-            "country": poi.get("country", "Cameroun"),
+            "country": poi.get("country", "Gabon"),
             "continent": "Afrique",
             "city": poi.get("city", ""),
             "description": poi.get("description_fr") or poi.get("description", ""),
@@ -80,7 +148,13 @@ def _load_pois_destinations() -> list:
             "description_fr": poi.get("description_fr", "") or poi.get("description", ""),
             "tags": tags,
             "avg_cost_per_day": cost,
-            "image": poi.get("image_url") or "g1.jpg",
+            "price_label": poi.get("price_label", ""),
+            "estimated_prices": poi.get("estimated_prices", {}),
+            "transport_routes": poi.get("transport_routes", {}),
+            "recommended_route": poi.get("recommended_route", ""),
+            "field_excursion": poi.get("field_excursion", ""),
+            "events": poi.get("events", []),
+            "image": _get_poi_image_url(poi),
             "rating": poi.get("rating", 4.0),
             "reviews_count": poi.get("reviews_count", 0),
             "category": cat,
@@ -151,7 +225,7 @@ def save_user(user: dict) -> None:
 # ---------------------------------------------------------------------------
 
 def get_all_destinations() -> list:
-    """Return all destinations from pois.json and approved user proposals."""
+    """Return the Libreville destination catalog capped at 20 places."""
     pois_destinations = _load_pois_destinations()
 
     # Include approved proposals from proposed_destinations.json
@@ -170,7 +244,7 @@ def get_all_destinations() -> list:
         }
         proposal_destinations.append(p_dest)
 
-    return pois_destinations + proposal_destinations
+    return (pois_destinations + proposal_destinations)[:20]
 
 
 # ---------------------------------------------------------------------------
@@ -483,9 +557,9 @@ def add_custom_destination(dest_data: dict) -> dict:
         "submitted_by": "admin",
         "status": "approved",
         "name": dest_data.get("name", "").strip(),
-        "country": dest_data.get("country", "Cameroun").strip(),
+        "country": dest_data.get("country", "Gabon").strip(),
         "continent": dest_data.get("continent", "Afrique").strip(),
-        "city": dest_data.get("city", "Yaoundé").strip(),
+        "city": dest_data.get("city", "Libreville").strip(),
         "description": dest_data.get("description", "").strip(),
         "tags": dest_data.get("tags", []),
         "avg_cost_per_day": float(dest_data.get("avg_cost_per_day", 50)),

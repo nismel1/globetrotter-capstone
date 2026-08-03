@@ -30,10 +30,65 @@ globetrotter-capstone/
 │   │   └── assets/        # Images et ressources
 │   ├── App.js
 │   └── package.json
+├── flutter_web/            # Frontend Flutter Web (nouveau)
+│   ├── lib/
+│   │   ├── main.dart      # Point d'entrée, thème, providers, routage
+│   │   ├── config/        # Design system (theme.dart) + app_config.dart
+│   │   ├── models/        # Destination, Itinerary, Review, Proposal, User
+│   │   ├── providers/     # AuthProvider, AppProvider
+│   │   ├── services/      # api_service.dart (client API complet)
+│   │   ├── screens/       # Écrans Flutter (12+ écrans)
+│   │   ├── navigation/    # Shell responsive (bottom nav / sidebar)
+│   │   └── widgets/       # Widgets communs + motifs gabonais
+│   ├── web/               # index.html, manifest.json, icons
+│   ├── test/              # Tests widget
+│   └── pubspec.yaml       # Dépendances Flutter
 ├── data/                  # Données JSON
-│   └── destinations.json
+│   ├── pois.json          # Catalogue de destinations
+│   ├── users.json         # Comptes utilisateurs
+│   ├── itineraries.json   # Itinéraires
+│   ├── reviews.json       # Avis publics
+│   └── proposed_destinations.json # Propositions
 └── requirements.txt       # Dépendances Python
 ```
+
+## 🖥️ Frontend Flutter Web
+
+La nouvelle application web est construite avec **Flutter** dans `flutter_web/` et remplace les
+templates React/Jinja legacy. Elle est connectée au même backend Flask (`http://localhost:5000`).
+
+### Flux de données avec Flutter Web
+
+```
+Flutter Web App → HTTP (http package) → Flask API → JSON files (/data)
+                    ↑  Authorization: Bearer <JWT>
+```
+
+- **Dev** : `flutter run -d chrome` (port 8080) → API sur `http://localhost:5000` (CORS activé)
+- **Prod** : `flutter build web` → build dans `flutter_web/build/web/` → servi par Flask à la racine `/`
+
+### Navigation responsive
+
+- **Mobile** (< 600px) : Bottom navigation bar
+- **Desktop** (≥ 600px) : Sidebar latérale + AppBar
+- Géré par `navigation/app_navigator.dart`
+
+### Liste des écrans
+
+| Écran | Fichier | Rôle |
+|-------|---------|------|
+| Connexion/Inscription | `login_screen.dart` | Auth |
+| Accueil | `home_screen.dart` | Hero, recherche, catégories |
+| Explorer | `explorer_screen.dart` | Carte provinces, destinations |
+| Détail destination | `destination_detail_screen.dart` | Infos, favoris, avis |
+| Favoris & Visités | `favorites_screen.dart` | Onglets + notes |
+| Itinéraires | `itineraries_screen.dart` | CRUD roadmap |
+| Recommandations | `recommendations_screen.dart` | Matching perso |
+| Événements | `events_screen.dart` | Culture gabonaise |
+| Propositions | `proposals_screen.dart` | Soumettre + lister |
+| Admin | `admin_screen.dart` | Stats, modération |
+| Profil | `profile_screen.dart` | Préférences, déconnexion |
+| Navigation | `navigation_screen.dart` | Simulation itinéraire |
 
 ## 🔄 Flux de Données
 

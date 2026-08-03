@@ -5,7 +5,7 @@ Destination search endpoint.
 
 Routes
 ------
-GET /destinations?q=paris&tag=food&continent=Europe
+GET /destinations?q=plage&tag=beach&city=Libreville
     Returns destinations that match any of the provided query parameters.
     All parameters are optional; omitting them returns the full catalogue.
 """
@@ -23,7 +23,9 @@ def search_destinations():
     Query parameters (all optional):
         q          – free-text search against name, country, and description
         tag        – filter by a single interest tag (e.g. "beach")
-        continent  – filter by continent name (e.g. "Europe")
+        continent  – filter by continent name (e.g. "Afrique")
+        city       – filter by city name (e.g. "Libreville")
+        category   – filter by source category (e.g. "event")
         max_cost   – filter by maximum average daily cost (integer)
 
     Returns a JSON list of matching destination objects.
@@ -31,6 +33,8 @@ def search_destinations():
     q = request.args.get("q", "").strip().lower()
     tag = request.args.get("tag", "").strip().lower()
     continent = request.args.get("continent", "").strip().lower()
+    city = request.args.get("city", "").strip().lower()
+    category = request.args.get("category", "").strip().lower()
     max_cost_str = request.args.get("max_cost", "").strip()
 
     max_cost = None
@@ -49,7 +53,11 @@ def search_destinations():
             searchable = " ".join([
                 dest.get("name", ""),
                 dest.get("country", ""),
+                dest.get("city", ""),
+                dest.get("category", ""),
                 dest.get("description", ""),
+                dest.get("field_excursion", ""),
+                " ".join(dest.get("events", [])),
             ]).lower()
             if q not in searchable:
                 continue
@@ -60,6 +68,12 @@ def search_destinations():
 
         # Continent filter
         if continent and continent != dest.get("continent", "").lower():
+            continue
+
+        if city and city != dest.get("city", "").lower():
+            continue
+
+        if category and category != dest.get("category", "").lower():
             continue
 
         # Cost filter – skip destinations that have no cost information or exceed the limit

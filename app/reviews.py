@@ -49,7 +49,7 @@ def list_reviews():
 @token_required
 def create_review(current_user: str):
     """Create a new review for a destination."""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     
     destination_name = data.get("destination_name")
     rating = data.get("rating")  # 1-5
@@ -91,7 +91,7 @@ def remove_review(current_user: str, review_id: str):
 @token_required
 def edit_review(current_user: str, review_id: str):
     """Edit a review (only if it belongs to current user or admin)."""
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     rating = data.get("rating")
     comment = data.get("comment")
     
@@ -126,7 +126,7 @@ def list_visited(current_user: str):
 @token_required
 def mark_visited(current_user: str):
     """Mark a destination as visited."""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     destination_name = data.get("destination_name")
     
     if not destination_name:
@@ -177,7 +177,7 @@ def get_note(current_user: str, destination_name: str):
 @token_required
 def create_or_update_note(current_user: str):
     """Create or update a note for a favorite destination."""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     
     destination_name = data.get("destination_name")
     note = data.get("note", "")

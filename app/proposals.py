@@ -46,7 +46,7 @@ def list_user_proposals(current_user: str):
 @token_required
 def submit_proposal(current_user: str):
     """Submit a new destination proposal."""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     
     # Required fields
     name = data.get("name")
@@ -122,7 +122,7 @@ def approve_proposal(current_user: str, proposal_id: str):
     if not is_admin(current_user):
         return jsonify({"error": "Admin access required"}), 403
     
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     admin_comment = data.get("comment", "")
     
     success = approve_and_add_destination(proposal_id)
@@ -147,7 +147,7 @@ def reject_proposal(current_user: str, proposal_id: str):
     if not is_admin(current_user):
         return jsonify({"error": "Admin access required"}), 403
     
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     admin_comment = data.get("comment", "Please provide more details")
     
     success = update_proposal_status(proposal_id, "rejected", admin_comment)
@@ -201,7 +201,7 @@ def admin_add_destination(current_user: str):
     if not is_admin(current_user):
         return jsonify({"error": "Admin access required"}), 403
     
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     name = data.get("name")
     if not name:
         return jsonify({"error": "name is required"}), 400
@@ -214,7 +214,7 @@ def admin_add_destination(current_user: str):
 @bp.route("/admin/login", methods=["POST"])
 def admin_login():
     """Special admin login endpoint."""
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     username = data.get("username")
     password = data.get("password")
     
