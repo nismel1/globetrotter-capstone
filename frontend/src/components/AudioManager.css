@@ -1,0 +1,259 @@
+.audio-manager {
+  background: linear-gradient(135deg, rgba(10, 20, 30, 0.9) 0%, rgba(20, 40, 60, 0.9) 100%);
+  border: 1px solid rgba(164, 189, 1, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.audio-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.audio-manager-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #EBF2FA;
+  margin: 0;
+}
+
+.audio-manager-btn-add {
+  background: linear-gradient(135deg, #A4BD01 0%, #7A8E00 100%);
+  color: #0a141e;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.audio-manager-btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(164, 189, 1, 0.3);
+}
+
+.audio-manager-error {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #fca5a5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.audio-manager-form {
+  background: rgba(6, 102, 140, 0.15);
+  border: 1px solid rgba(66, 122, 161, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.audio-manager-form h3 {
+  color: #A4BD01;
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+}
+
+.audio-manager-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audio-manager-form input,
+.audio-manager-form textarea,
+.audio-manager-form select {
+  background: rgba(6, 102, 140, 0.15);
+  border: 1px solid rgba(66, 122, 161, 0.4);
+  border-radius: 8px;
+  color: #EBF2FA;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.audio-manager-form input:focus,
+.audio-manager-form textarea:focus,
+.audio-manager-form select:focus {
+  outline: none;
+  border-color: #A4BD01;
+  background: rgba(6, 102, 140, 0.25);
+}
+
+.audio-manager-form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.audio-manager-btn-save,
+.audio-manager-btn-cancel {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.audio-manager-btn-save {
+  background: linear-gradient(135deg, #A4BD01 0%, #7A8E00 100%);
+  color: #0a141e;
+}
+
+.audio-manager-btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(164, 189, 1, 0.3);
+}
+
+.audio-manager-btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #EBF2FA;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.audio-manager-btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.audio-manager-list {
+  display: grid;
+  gap: 16px;
+}
+
+.audio-manager-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(164, 189, 1, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s;
+}
+
+.audio-manager-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(164, 189, 1, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.audio-manager-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.audio-manager-item-header h4 {
+  margin: 0;
+  color: #EBF2FA;
+  font-size: 15px;
+}
+
+.audio-manager-category {
+  background: rgba(164, 189, 1, 0.2);
+  color: #A4BD01;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.audio-manager-item-desc {
+  color: rgba(235, 242, 250, 0.7);
+  font-size: 13px;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.audio-manager-item-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: rgba(235, 242, 250, 0.6);
+  margin: 12px 0;
+}
+
+.audio-manager-item-meta a {
+  color: #A4BD01;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.audio-manager-item-meta a:hover {
+  color: #c5da25;
+}
+
+.audio-manager-item-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.audio-manager-btn-edit,
+.audio-manager-btn-delete {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.audio-manager-btn-edit {
+  background: rgba(164, 189, 1, 0.2);
+  color: #A4BD01;
+  border: 1px solid rgba(164, 189, 1, 0.3);
+}
+
+.audio-manager-btn-edit:hover {
+  background: rgba(164, 189, 1, 0.3);
+  border-color: rgba(164, 189, 1, 0.5);
+}
+
+.audio-manager-btn-delete {
+  background: rgba(220, 38, 38, 0.1);
+  color: #fca5a5;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.audio-manager-btn-delete:hover {
+  background: rgba(220, 38, 38, 0.15);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.audio-manager-loading {
+  text-align: center;
+  color: rgba(235, 242, 250, 0.6);
+  padding: 32px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .audio-manager-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .audio-manager-btn-add {
+    width: 100%;
+  }
+
+  .audio-manager-item-meta {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

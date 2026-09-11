@@ -1,0 +1,45 @@
+{
+  "name": "globetrotter",
+  "version": "1.0.0",
+  "description": "Application touristique Libreville - Carnet de voyage en microservices",
+  "private": true,
+  "scripts": {
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker-compose down -v",
+    "docker:restart": "docker-compose restart",
+    "db:init": "docker exec globetrotter-postgres psql -U postgres -d globetrotter -f /docker-entrypoint-initdb.d/init.sql",
+    "db:backup": "docker exec globetrotter-postgres pg_dump -U postgres globetrotter > database/backups/backup_$(date +%Y%m%d_%H%M%S).sql",
+    "dev:auth": "cd backend/auth-service && npm install && npm run dev",
+    "dev:catalog": "cd backend/catalog-service && npm install && npm run dev",
+    "dev:itinerary": "cd backend/itinerary-service && npm install && npm run dev",
+    "dev:recommendation": "cd backend/recommendation-service && npm install && npm run dev",
+    "dev:analytics": "cd backend/analytics-service && npm install && npm run dev",
+    "dev:gateway": "cd backend/api-gateway && npm install && npm run dev",
+    "install:all": "npm run install:services && npm run install:frontend",
+    "install:services": "cd backend/api-gateway && npm install && cd ../auth-service && npm install && cd ../catalog-service && npm install && cd ../itinerary-service && npm install && cd ../recommendation-service && npm install && cd ../analytics-service && npm install",
+    "install:frontend": "cd frontend && npm install 2>/dev/null || echo 'Frontend has no npm dependencies'",
+    "lint": "echo 'Linting coming in Phase 2' || true",
+    "test": "echo 'Tests coming in Phase 2' || true"
+  },
+  "keywords": [
+    "tourism",
+    "libreville",
+    "travel",
+    "microservices",
+    "nodejs",
+    "postgresql"
+  ],
+  "author": "Globetrotter Team",
+  "license": "Confidential",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^5.0.0"
+  }
+}

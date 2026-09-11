@@ -1,0 +1,344 @@
+services:
+  # ============================================================
+  # POSTGRESQL (Natifs Render)
+  # ============================================================
+  - type: db
+    name: globetrotter-postgres
+    plan: free
+    ipAllowList: [] # Sécurité : Accessible uniquement par vos microservices Render
+
+  # ============================================================
+  # REDIS (Natif Render)
+  # ============================================================
+  - type: redis
+    name: globetrotter-redis
+    plan: free
+    ipAllowList: []
+
+  # ============================================================
+  # RABBITMQ
+  # ============================================================
+  - type: web
+    name: globetrotter-rabbitmq
+    env: docker
+    dockerfilePath: Dockerfile
+    # Note: Si vous utilisez l'image officielle, spécifiez-la dans votre Dockerfile local
+    # ou utilisez une offre externe comme CloudAMQP pour rester sur l'offre gratuite.
+    plan: free
+    envVars:
+      - key: RABBITMQ_DEFAULT_USER
+        sync: false
+      - key: RABBITMQ_DEFAULT_PASS
+        generateValue: true
+
+  # ============================================================
+  # OSRM (Calcul d'itinéraires)
+  # ============================================================
+  - type: web
+    name: globetrotter-osrm
+    env: docker
+    plan: free # Attention : OSRM consomme beaucoup de RAM selon la carte chargée
+
+  # ============================================================
+  # ELASTICSEARCH
+  # ============================================================
+  - type: web
+    name: globetrotter-elasticsearch
+    env: docker
+    plan: free
+    envVars:
+      - key: discovery.type
+        value: single-node
+      - key: xpack.security.enabled
+        value: "false"
+      - key: ES_JAVA_OPTS
+        value: "-Xms256m -Xmx256m" # Réduit pour l'offre gratuite
+
+  # ============================================================
+  # AUTH SERVICE
+  # ============================================================
+  - type: pserv # Private Service (invisible depuis l'extérieur)
+    name: globetrotter-auth-service
+    env: docker
+    rootDir: backend/auth-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        fromService:
+          type: web
+          name: globetrotter-api-gateway
+          property: env:JWT_SECRET
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
+
+  # ============================================================
+  # CATALOG SERVICE
+  # ============================================================
+  - type: pserv
+    name: globetrotter-catalog-service
+    env: docker
+    rootDir: backend/catalog-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3002
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
+      - key: REDIS_URL
+        fromRedis:
+          name: globetrotter-redis
+          property: connectionString
+      - key: ELASTICSEARCH_URL
+        value: http://globetrotter-elasticsearch:9200
+
+  # ============================================================
+  # ITINERARY SERVICE
+  # ============================================================
+  - type: pserv
+    name: globetrotter-itinerary-service
+    env: docker
+    rootDir: backend/itinerary-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3003
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
+
+  # ============================================================
+  # RECOMMENDATION SERVICE
+  # ============================================================
+  - type: pserv
+    name: globetrotter-recommendation-service
+    env: docker
+    rootDir: backend/recommendation-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3004
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
+      - key: REDIS_URL
+        fromRedis:
+          name: globetrotter-redis
+          property: connectionString
+
+  # ============================================================
+  # ANALYTICS SERVICE
+  # ============================================================
+  - type: pserv
+    name: globetrotter-analytics-service
+    env: docker
+    rootDir: backend/analytics-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3005
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
+      - key: RABBITMQ_URL
+        value: amqp://globetrotter-rabbitmq:5672
+
+  # ============================================================
+  # CHATBOT SERVICE
+  # ============================================================
+  - type: pserv
+    name: globetrotter-chatbot-service
+    env: docker
+    rootDir: backend/chatbot-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3006
+      - key: OPENROUTER_API_KEY
+        sync: false # À renseigner manuellement dans l'interface Render
+      - key: JWT_SECRET
+        fromService:
+          type: web
+          name: globetrotter-api-gateway
+          property: env:JWT_SECRET
+      - key: CATALOG_SERVICE_URL
+        value: http://globetrotter-catalog-service:3002
+      - key: ELASTICSEARCH_URL
+        value: http://globetrotter-elasticsearch:9200
+      - key: REDIS_URL
+        fromRedis:
+          name: globetrotter-redis
+          property: connectionString
+
+  # ============================================================
+  # GROUP SERVICE
+  # ============================================================
+  - type: pserv
+    name: globetrotter-group-service
+    env: docker
+    rootDir: backend/group-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3007
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
+      - key: REDIS_URL
+        fromRedis:
+          name: globetrotter-redis
+          property: connectionString
+      - key: RABBITMQ_URL
+        value: amqp://globetrotter-rabbitmq:5672
+
+  # ============================================================
+  # MESSAGE SERVICE
+  # ============================================================
+  - type: pserv
+    name: globetrotter-message-service
+    env: docker
+    rootDir: backend/message-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3008
+      - key: INTERNAL_SERVICE_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: JWT_SECRET
+        fromService:
+          type: web
+          name: globetrotter-api-gateway
+          property: env:JWT_SECRET
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:

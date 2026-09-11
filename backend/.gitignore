@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
+.env
+.env.example
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+pids/
+*.pid.lock
+coverage/
+.nyc_output/

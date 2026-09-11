@@ -1,0 +1,705 @@
+/* ============================================================
+   Globetrotter — Composants partagés
+   Doit être importé après tokens.css
+   ============================================================ */
+
+/* ── Layout helpers ────────────────────────────────────────── */
+
+.gt-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.gt-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 80px 24px 40px;
+}
+
+.gt-container--narrow {
+  max-width: 1000px;
+}
+
+/* ── Cartes / Panels ────────────────────────────────────────── */
+
+.gt-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-gold-medium);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-7);
+  box-shadow: var(--shadow-card);
+}
+
+.gt-card--elevated {
+  box-shadow: var(--shadow-panel);
+}
+
+.gt-card--dark {
+  background: var(--color-surface-low);
+  border-color: rgba(255,255,255,0.08);
+}
+
+/* ── Section eyebrow (label de section) ────────────────────── */
+
+.gt-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.gt-eyebrow--accent {
+  color: var(--color-gold-vivid);
+}
+
+/* ── Divider doré ───────────────────────────────────────────── */
+
+.gt-divider {
+  height: 1px;
+  background: var(--color-gold-medium);
+  margin: var(--space-6) 0;
+  border: none;
+}
+
+.gt-rule {
+  width: 100%;
+  height: 1px;
+  background: var(--color-gold-subtle);
+}
+
+/* ── Titres de section ──────────────────────────────────────── */
+
+.gt-section-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.05;
+}
+
+.gt-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.gt-page-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-muted);
+  margin-top: var(--space-1);
+}
+
+/* ── Boutons ────────────────────────────────────────────────── */
+
+.gt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+}
+
+.gt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.gt-btn--primary {
+  background: linear-gradient(135deg, var(--color-gold) 0%, #679436 100%);
+  color: var(--color-bg);
+  box-shadow: 0 4px 16px rgba(var(--color-gold-rgb), 0.3);
+}
+
+.gt-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.gt-btn--secondary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-gold-strong);
+  color: var(--color-gold);
+}
+
+.gt-btn--secondary:hover:not(:disabled) {
+  background: var(--color-gold-subtle);
+}
+
+.gt-btn--ghost {
+  background: transparent;
+  border: 1px solid var(--color-gold-medium);
+  color: var(--color-muted);
+}
+
+.gt-btn--ghost:hover:not(:disabled) {
+  border-color: var(--color-gold-strong);
+  color: var(--color-text);
+}
+
+.gt-btn--danger {
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.gt-btn--danger:hover:not(:disabled) {
+  background: rgba(var(--color-danger-rgb), 0.3);
+}
+
+.gt-btn--full {
+  width: 100%;
+}
+
+.gt-btn--large {
+  padding: 14px 20px;
+  font-size: 12px;
+}
+
+.gt-btn--icon {
+  padding: 6px;
+  border-radius: var(--radius-md);
+}
+
+/* Bouton "dashed" (ajouter) */
+.gt-btn--dashed {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-gold-faint);
+  border: 2px dashed var(--color-gold);
+  border-radius: var(--radius-xl);
+  color: var(--color-gold);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: all var(--transition);
+  margin-top: var(--space-6);
+}
+
+.gt-btn--dashed:hover {
+  background: var(--color-gold-subtle);
+}
+
+/* ── Formulaires ────────────────────────────────────────────── */
+
+.gt-form-group {
+  margin-bottom: var(--space-4);
+}
+
+.gt-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.gt-label--muted {
+  color: var(--color-muted);
+}
+
+.gt-input,
+.gt-textarea,
+.gt-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-gold-medium);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  transition: border-color var(--transition);
+}
+
+.gt-input:focus,
+.gt-textarea:focus,
+.gt-select:focus {
+  border-color: var(--color-gold);
+  outline: none;
+}
+
+.gt-input::placeholder,
+.gt-textarea::placeholder {
+  color: rgba(239, 230, 211, 0.35);
+}
+
+.gt-select {
+  background: var(--color-surface-mid);
+}
+
+.gt-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.gt-form-error {
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  color: #E57373;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin-bottom: var(--space-3);
+}
+
+.gt-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .gt-form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Badges / Status ────────────────────────────────────────── */
+
+.gt-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: 1px solid currentColor;
+}
+
+.gt-badge--pending {
+  background: rgba(var(--color-gold-rgb), 0.15);
+  color: var(--color-gold);
+}
+
+.gt-badge--approved {
+  background: rgba(46, 125, 50, 0.25);
+  color: #81C784;
+}
+
+.gt-badge--rejected {
+  background: var(--color-danger-bg);
+  color: #E57373;
+}
+
+/* ── Modale overlay ─────────────────────────────────────────── */
+
+.gt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: 20px;
+}
+
+.gt-modal {
+  background: #02202E;
+  border: 1px solid var(--color-gold);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  width: 90%;
+  max-width: 480px;
+  box-shadow: var(--shadow-modal);
+}
+
+.gt-modal--large {
+  max-width: 640px;
+}
+
+.gt-modal__title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--color-gold);
+  margin-bottom: var(--space-4);
+}
+
+.gt-modal__actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+/* ── Tableau de données (inline) ────────────────────────────── */
+
+.gt-data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.gt-data-label {
+  color: var(--color-muted);
+}
+
+.gt-data-value {
+  color: var(--color-text);
+  font-weight: bold;
+}
+
+/* ── Loading spinner ────────────────────────────────────────── */
+
+.gt-spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(var(--color-gold-rgb), 0.2);
+  border-top-color: var(--color-gold);
+  animation: gt-spin 0.8s linear infinite;
+}
+
+.gt-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  gap: var(--space-4);
+}
+
+.gt-loading-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ── État vide ──────────────────────────────────────────────── */
+
+.gt-empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  background: rgba(20,35,29,0.5);
+  border: 1px dashed var(--color-gold-medium);
+  border-radius: var(--radius-3xl);
+}
+
+.gt-empty-state__icon {
+  font-size: 48px;
+  margin-bottom: var(--space-4);
+}
+
+.gt-empty-state__title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+}
+
+.gt-empty-state__desc {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-muted);
+  max-width: 400px;
+  margin: 0 auto var(--space-6);
+}
+
+/* ── Timeline ───────────────────────────────────────────────── */
+
+.gt-timeline-node {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  border: 2px solid var(--color-bg);
+  box-shadow: 0 0 8px var(--color-gold);
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.gt-timeline-line {
+  flex: 1;
+  width: 2px;
+  background: var(--color-gold-subtle);
+  margin-top: 4px;
+}
+
+.gt-timeline-time {
+  width: 60px;
+  flex-shrink: 0;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-gold);
+  font-weight: bold;
+  padding-top: 4px;
+}
+
+/* ── Action toast/feedback ──────────────────────────────────── */
+
+.gt-toast {
+  background: var(--color-gold-subtle);
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  padding: 12px 20px;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-bottom: var(--space-6);
+  text-align: center;
+  box-shadow: var(--shadow-gold);
+}
+
+.gt-toast--error {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+  color: #E57373;
+}
+
+/* ── Sélécteur horizontal (tabs/jours) ──────────────────────── */
+
+.gt-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface-mid);
+  border: 1px solid var(--color-gold-medium);
+  border-radius: var(--radius-xl);
+  padding: 12px 16px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.gt-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.gt-tab-item {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  padding: 8px 16px;
+  cursor: pointer;
+  min-width: 120px;
+  transition: all var(--transition);
+}
+
+.gt-tab-item.is-active {
+  background: var(--color-gold-subtle);
+  border-color: var(--color-gold);
+}
+
+.gt-tab-item__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--color-muted);
+}
+
+.gt-tab-item.is-active .gt-tab-item__label {
+  color: var(--color-gold);
+}
+
+.gt-tab-item__sub {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.gt-tab-arrow {
+  background: transparent;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-size: 16px;
+  flex-shrink: 0;
+  padding: 4px 8px;
+}
+
+/* ── Stats grid ─────────────────────────────────────────────── */
+
+.gt-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.gt-stat-card {
+  background: var(--color-surface-mid);
+  border: 1px solid var(--color-gold-medium);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  text-align: center;
+}
+
+.gt-stat-value {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--color-gold);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.gt-stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--color-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Budget bar ─────────────────────────────────────────────── */
+
+.gt-budget-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.gt-budget-bar__row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-muted);
+}
+
+.gt-budget-bar__track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  margin-top: 2px;
+}
+
+.gt-budget-bar__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+/* ── Photo drop zone ────────────────────────────────────────── */
+
+.gt-dropzone {
+  border: 2px dashed var(--color-gold-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  background: rgba(0,0,0,0.2);
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--transition);
+}
+
+.gt-dropzone:hover {
+  border-color: var(--color-gold);
+}
+
+.gt-dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.gt-dropzone__icon {
+  font-size: 28px;
+  margin-bottom: var(--space-2);
+}
+
+.gt-dropzone__text {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+/* ── Proposal card ──────────────────────────────────────────── */
+
+.gt-proposal-card {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.gt-proposal-card img {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.gt-proposal-card__name {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+.gt-proposal-card__meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.gt-proposal-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-2);
+}
+
+/* ── Animations globales ────────────────────────────────────── */
+
+@keyframes gt-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gt-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gt-skeleton {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

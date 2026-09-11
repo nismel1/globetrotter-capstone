@@ -1,0 +1,754 @@
+name: globetrotter
+
+services:
+
+  # ============================================================
+  # POSTGRESQL
+  # Base de données principale
+  # ============================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: globetrotter-postgres
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+
+    expose:
+      - "5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./backend/database/002_message_notification_schema.sql:/docker-entrypoint-initdb.d/02-message-notification.sql:ro
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+
+  # ============================================================
+  # REDIS
+  # Cache applicatif et invalidation
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: globetrotter-redis
+
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - allkeys-lru
+
+    expose:
+      - "6379"
+
+    volumes:
+      - redis_data:/data
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # ============================================================
+  # RABBITMQ
+  # Bus d'événements inter-services
+  # ============================================================
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: globetrotter-rabbitmq
+    hostname: globetrotter-rabbitmq
+
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:?RABBITMQ_USER is required}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+      RABBITMQ_DEFAULT_VHOST: /
+
+    expose:
+      - "5672"
+      - "15672"
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "rabbitmq-diagnostics",
+          "-q",
+          "ping"
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+
+  # ============================================================
+  # OSRM
+  # Moteur de calcul d'itinéraires
+  # ============================================================
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend:latest
+    container_name: globetrotter-osrm
+
+    expose:
+      - "5000"
+
+    volumes:
+      - osrm_data:/osrm-data-tmp
+
+    command:
+      - osrm-routed
+      - --algorithm
+      - mld
+      - --max-table-size
+      - "1000"
+      - /osrm-data-tmp/gabon-latest.osrm
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # ELASTICSEARCH
+  # Recherche full-text
+  # ============================================================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: globetrotter-elasticsearch
+
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      cluster.name: globetrotter
+      bootstrap.memory_lock: "true"
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+    expose:
+      - "9200"
+
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s >/dev/null || exit 1"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+
+
+  # ============================================================
+  # AUTH SERVICE
+  # Authentification + création des JWT
+  # ============================================================
+  auth-service:
+    build:
+      context: ./backend/auth-service
+
+    container_name: globetrotter-auth-service
+
+    expose:
+      - "3001"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3001
+
+      # IMPORTANT :
+      # Même JWT_SECRET que le API Gateway
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # CATALOG SERVICE
+  # Destinations, lieux, catégories, événements...
+  # ============================================================
+  catalog-service:
+    build:
+      context: ./backend/catalog-service
+
+    container_name: globetrotter-catalog-service
+
+    expose:
+      - "3002"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3002
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+      REDIS_URL: redis://redis:6379
+
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_INDEX: globetrotter_places
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+      redis:
+        condition: service_healthy
+
+      elasticsearch:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # ITINERARY SERVICE
+  # Gestion des itinéraires
+  # ============================================================
+  itinerary-service:
+    build:
+      context: ./backend/itinerary-service
+
+    container_name: globetrotter-itinerary-service
+
+    expose:
+      - "3003"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3003
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # RECOMMENDATION SERVICE
+  # Recommandations personnalisées
+  # ============================================================
+  recommendation-service:
+    build:
+      context: ./backend/recommendation-service
+
+    container_name: globetrotter-recommendation-service
+
+    expose:
+      - "3004"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3004
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+      REDIS_URL: redis://redis:6379
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+      redis:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # ANALYTICS SERVICE
+  # Statistiques et événements
+  # ============================================================
+  analytics-service:
+    build:
+      context: ./backend/analytics-service
+
+    container_name: globetrotter-analytics-service
+
+    expose:
+      - "3005"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3005
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+      rabbitmq:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # CHATBOT SERVICE
+  # Assistant touristique IA
+  # ============================================================
+  chatbot-service:
+    build:
+      context: ./backend/chatbot-service
+
+    container_name: globetrotter-chatbot-service
+
+    expose:
+      - "3006"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3006
+
+      # Même secret JWT que Auth + Gateway
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_INDEX: globetrotter_places
+
+      REDIS_URL: redis://redis:6379
+
+      # Clé IA
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+
+    depends_on:
+      catalog-service:
+        condition: service_healthy
+
+      elasticsearch:
+        condition: service_healthy
+
+      redis:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # GROUP SERVICE
+  # Voyages/groupes collaboratifs
+  # ============================================================
+  group-service:
+    build:
+      context: ./backend/group-service
+
+    container_name: globetrotter-group-service
+
+    expose:
+      - "3007"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3007
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+      REDIS_URL: redis://redis:6379
+
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+      redis:
+        condition: service_healthy
+
+      rabbitmq:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+  # ============================================================
+  # MESSAGE SERVICE
+  # Messagerie utilisateur
+  # ============================================================
+  message-service:
+    build:
+      context: ./backend/message-service
+
+    container_name: globetrotter-message-service
+
+    expose:
+      - "3008"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3008
+
+      # JWT partagé
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+      NOTIFICATION_SERVICE_URL: http://notification-service:3009
+
+      INTERNAL_SERVICE_KEY: ${INTERNAL_SERVICE_KEY:?INTERNAL_SERVICE_KEY is required}
+
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+
+    depends_on:
+      postgres:
+        condition: service_started
+
+      notification-service:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3008/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # ============================================================
+  # NOTIFICATION SERVICE
+  # Notifications utilisateur
+  # ============================================================
+  notification-service:
+    build:
+      context: ./backend/notification-service
+
+    container_name: globetrotter-notification-service
+
+    expose:
+      - "3009"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 3009
+
+      # JWT partagé
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+
+      INTERNAL_SERVICE_KEY: ${INTERNAL_SERVICE_KEY:?INTERNAL_SERVICE_KEY is required}
+
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+      rabbitmq:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3009/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+  # ============================================================
+  # API GATEWAY
+  # Point d'entrée unique du backend
+  # ============================================================
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+
+    container_name: globetrotter-api-gateway
+
+    ports:
+      - "4000:4000"
+
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: 4000
+
+      # ========================================================
+      # JWT
+      # DOIT être identique à auth-service
+      # ========================================================
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+
+      # ========================================================
+      # Microservices
+      # ========================================================
+      AUTH_SERVICE_URL: http://auth-service:3001
+      CATALOG_SERVICE_URL: http://catalog-service:3002
+      ITINERARY_SERVICE_URL: http://itinerary-service:3003
+      RECOMMENDATION_SERVICE_URL: http://recommendation-service:3004
+      ANALYTICS_SERVICE_URL: http://analytics-service:3005
+      CHATBOT_SERVICE_URL: http://chatbot-service:3006
+      GROUP_SERVICE_URL: http://group-service:3007
+      MESSAGE_SERVICE_URL: http://message-service:3008
+      NOTIFICATION_SERVICE_URL: http://notification-service:3009
+
+      # ========================================================
+      # Infrastructure
+      # ========================================================
+      OSRM_SERVICE_URL: http://osrm:5000
+
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+
+      REDIS_URL: redis://redis:6379
+
+      # ========================================================
+      # Sécurité / APIs externes
+      # ========================================================
+      INTERNAL_SERVICE_KEY: ${INTERNAL_SERVICE_KEY:?INTERNAL_SERVICE_KEY is required}
+
+      PEXELS_API_KEY: ${PEXELS_API_KEY:-}
+
+      # ========================================================
+      # CORS
+      # ========================================================
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+
+    depends_on:
+      auth-service:
+        condition: service_healthy
+
+      catalog-service:
+        condition: service_healthy
+
+      itinerary-service:
+        condition: service_healthy
+
+      recommendation-service:
+        condition: service_healthy
+
+      analytics-service:
+        condition: service_healthy
+
+      chatbot-service:
+        condition: service_healthy
+
+      group-service:
+        condition: service_healthy
+
+      message-service:
+        condition: service_healthy
+
+      notification-service:
+        condition: service_healthy
+
+      elasticsearch:
+        condition: service_healthy
+
+      redis:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:4000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+
+  # ============================================================
+  # FRONTEND
+  # Nginx + application React/Vite
+  # ============================================================
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: globetrotter-frontend
+
+    ports:
+      - "3200:80"
+
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - globetrotter-network
+
+
+# ==============================================================
+# VOLUMES
+# ==============================================================
+volumes:
+
+  postgres_data:
+    name: globetrotter-postgres-data
+
+  osrm_data:
+    name: globetrotter-osrm-data
+
+  elasticsearch_data:
+    name: globetrotter-elasticsearch-data
+
+  redis_data:
+    name: globetrotter-redis-data
+
+  rabbitmq_data:
+    name: globetrotter-rabbitmq-data
+
+
+# ==============================================================
+# NETWORK
+# ==============================================================
+networks:
+
+  globetrotter-network:
+    name: globetrotter-network
+    driver: bridge

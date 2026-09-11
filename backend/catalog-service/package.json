@@ -1,0 +1,22 @@
+{
+  "name": "globetrotter-catalog-service",
+  "version": "1.0.0",
+  "description": "Catalog Service - Places, categories, tags, events, proposals, moderation",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "express": "^4.18.2",
+    "pg": "^8.10.0",
+    "dotenv": "^16.0.3",
+    "cors": "^2.8.5",
+    "redis": "^4.6.13",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

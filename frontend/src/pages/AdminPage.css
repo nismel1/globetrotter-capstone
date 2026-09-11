@@ -1,0 +1,441 @@
+/* AdminPage styles */
+.admin-page {
+  min-height: 100vh;
+  background: #02202E;
+  color: #EBF2FA;
+  padding-top: 80px;
+}
+
+.admin-alert {
+  background: rgba(103, 148, 54, 0.15);
+  border: 1px solid rgba(103, 148, 54, 0.6);
+  border-radius: 10px;
+  color: #f0b2a7;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.admin-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(2, 32, 46, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-confirm-dialog {
+  width: min(420px, 100%);
+  background: #0d1f2b;
+  border: 1px solid rgba(164, 189, 1, 0.6);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+
+.admin-confirm-dialog h3 {
+  margin: 0 0 12px;
+  color: #EBF2FA;
+  font-size: 1.3rem;
+}
+
+.admin-confirm-dialog p {
+  margin: 0;
+  color: #b9ccd8;
+  line-height: 1.5;
+}
+
+.admin-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.admin-confirm-cancel,
+.admin-confirm-confirm,
+.admin-load-more {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-confirm-cancel {
+  background: transparent;
+  border: 1px solid rgba(180, 197, 211, 0.4);
+  color: #dfeaf5;
+}
+
+.admin-confirm-confirm {
+  background: #A4BD01;
+  border: 1px solid #A4BD01;
+  color: #02202E;
+}
+
+.admin-load-more {
+  margin-top: 18px;
+  border: 1px solid rgba(164, 189, 1, 0.6);
+  background: rgba(164, 189, 1, 0.12);
+  color: #dff4a9;
+  width: 100%;
+}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.admin-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 600;
+  color: #EBF2FA;
+}
+
+.admin-subtitle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: #427AA1;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* Metrics grid */
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.admin-metric-card {
+  background: rgba(6,102,140,0.12);
+  border: 1px solid rgba(66,122,161,0.3);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.admin-metric-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 40px;
+  font-weight: 600;
+  color: #A4BD01;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.admin-metric-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: #427AA1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Proposals */
+.admin-section-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: #A4BD01;
+  letter-spacing: 0.12em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.admin-proposal-card {
+  background: rgba(2,32,46,0.8);
+  border: 1px solid rgba(66,122,161,0.25);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-proposal-info h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  color: #EBF2FA;
+  margin-bottom: 4px;
+}
+
+.admin-proposal-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: #427AA1;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-btn-approve {
+  background: rgba(103,148,54,0.2);
+  border: 1px solid #679436;
+  color: #679436;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.admin-btn-approve:hover {
+  background: rgba(103,148,54,0.35);
+}
+
+.admin-btn-reject {
+  background: rgba(168,71,43,0.15);
+  border: 1px solid #679436;
+  color: #E57373;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.admin-btn-reject:hover {
+  background: rgba(168,71,43,0.3);
+}
+
+.admin-empty {
+  text-align: center;
+  padding: 48px;
+  color: #427AA1;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+}
+
+.admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px;
+  color: #427AA1;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+}
+
+.admin-error {
+  background: rgba(168,71,43,0.15);
+  border: 1px solid #679436;
+  color: #E57373;
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  margin-bottom: 24px;
+}
+
+.admin-management-list {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-management-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  background: rgba(6, 102, 140, 0.12);
+  border: 1px solid rgba(66, 122, 161, 0.25);
+  border-radius: 8px;
+}
+
+.admin-management-row div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.admin-management-row strong,
+.admin-management-row small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-management-row strong {
+  color: #EBF2FA;
+}
+
+.admin-management-row small {
+  color: #427AA1;
+  font-size: 11px;
+}
+
+.admin-management-row button {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border: 1px solid #A4BD01;
+  border-radius: 6px;
+  background: transparent;
+  color: #A4BD01;
+  cursor: pointer;
+}
+
+.admin-management-row button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-heading-actions,
+.admin-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-add-button,
+.admin-icon-button,
+.admin-danger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.admin-add-button {
+  padding: 8px 12px;
+  border: 1px solid #A4BD01;
+  border-radius: 6px;
+  background: #A4BD01;
+  color: #02202E;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-add-button svg,
+.admin-row-actions svg,
+.admin-icon-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.admin-row-actions button {
+  min-height: 34px;
+}
+
+.admin-row-actions .admin-danger-button {
+  border-color: #679436;
+  color: #f0b2a7;
+}
+
+.admin-icon-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(180, 197, 211, 0.4);
+  border-radius: 6px;
+  background: transparent;
+  color: #dfeaf5;
+  cursor: pointer;
+}
+
+.admin-editor-dialog {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  background: #0d1f2b;
+  border: 1px solid rgba(164, 189, 1, 0.6);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+}
+
+.admin-editor-dialog h3 {
+  margin: 0;
+  color: #EBF2FA;
+  font-size: 1.3rem;
+}
+
+.admin-editor-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.admin-editor-form label {
+  display: grid;
+  gap: 7px;
+  color: #b9ccd8;
+  font-size: 0.85rem;
+}
+
+.admin-editor-form input,
+.admin-editor-form select,
+.admin-editor-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(180, 197, 211, 0.35);
+  border-radius: 6px;
+  background: #02202E;
+  color: #EBF2FA;
+  padding: 10px;
+  font: inherit;
+}
+
+.admin-editor-form textarea,
+.admin-editor-form > label:nth-last-child(3) {
+  grid-column: 1 / -1;
+}
+
+.admin-editor-form .admin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-editor-form .admin-checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-editor-form .admin-confirm-actions {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .admin-management-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-heading-actions {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+
+  .admin-editor-form {
+    grid-template-columns: 1fr;
+  }
+}

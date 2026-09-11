@@ -1,0 +1,75 @@
+/* ============================================================
+   Globetrotter — Design Tokens (variables CSS globales)
+   Importé en premier dans index.css
+   ============================================================ */
+
+:root {
+  /* ── Palette principale (thème sombre) */
+  --color-bg:          #02202E;   /* fond de page */
+  --color-surface:     rgba(2, 32, 46, 0.85);
+  --color-surface-low: rgba(2, 32, 46, 0.6);
+  --color-surface-mid: rgba(2, 32, 46, 0.8);
+  --color-overlay:     rgba(0, 0, 0, 0.8);
+
+  --color-gold:        #A4BD01;
+  --color-gold-rgb:    164, 189, 1;
+  --color-gold-faint:  rgba(164, 189, 1, 0.08);
+  --color-gold-subtle: rgba(164, 189, 1, 0.15);
+  --color-gold-medium: rgba(164, 189, 1, 0.25);
+  --color-gold-strong: rgba(164, 189, 1, 0.4);
+
+  --color-text:        #EBF2FA;
+  --color-muted:       #427AA1;
+
+  --color-accent:      #679436;    /* vert savane */
+  --color-primary:     #fffef;    /* bleu profond */
+  --color-lagoon:      #427AA1;    /* bleu lagune */
+  --color-gold-vivid:  #A4BD01;    /* vert-or */
+
+  --color-danger:      #679436;
+  --color-danger-rgb:  103, 148, 54;
+  --color-danger-bg:   rgba(103, 148, 54, 0.15);
+  --color-success:     #679436;
+
+  /* ── Typographie */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Work Sans', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+
+  /* ── Spacing */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ── Border radius */
+  --radius-sm:  4px;
+  --radius-md:  6px;
+  --radius-lg:  8px;
+  --radius-xl:  12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-full: 9999px;
+
+  /* ── Ombres */
+  --shadow-card:   0 4px 16px rgba(0,0,0,0.3);
+  --shadow-panel:  0 10px 30px rgba(0,0,0,0.4);
+  --shadow-modal:  0 20px 60px rgba(0,0,0,0.7);
+  --shadow-gold:   0 0 20px rgba(212,175,55,0.2);
+
+  /* ── Transitions */
+  --transition: 0.2s ease;
+  --transition-slow: 0.35s ease;
+
+  /* ── Z-index */
+  --z-above:   100;
+  --z-modal:   1000;
+  --z-overlay: 1500;
+  --z-toast:   2000;
+}
