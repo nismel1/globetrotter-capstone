@@ -1,5 +1,5 @@
 # ============================================================
-# BASES DE DONNÉES ET CACHE (Blocs natifs Render en dehors de services)
+# BASES DE DONNÉES (Seul bloc natif externe accepté)
 # ============================================================
 databases:
   - name: globetrotter-postgres
@@ -7,14 +7,17 @@ databases:
     user: admin
     plan: free
 
-redis:
-  - name: globetrotter-redis
-    plan: free
-
 # ============================================================
-# SERVICES (Web apps, services privés, background workers)
+# SERVICES (Web apps, services privés, Redis, RabbitMQ)
 # ============================================================
 services:
+  # ============================================================
+  # REDIS (Correction : Déclaré en tant que service avec type: redis)
+  # ============================================================
+  - type: redis
+    name: globetrotter-redis
+    plan: free
+
   # ============================================================
   # RABBITMQ
   # ============================================================
@@ -110,7 +113,8 @@ services:
           name: globetrotter-postgres
           property: port
       - key: REDIS_URL
-        fromRedis:
+        fromService:
+          type: redis
           name: globetrotter-redis
           property: connectionString
 
@@ -182,7 +186,8 @@ services:
           name: globetrotter-postgres
           property: port
       - key: REDIS_URL
-        fromRedis:
+        fromService:
+          type: redis
           name: globetrotter-redis
           property: connectionString
 
@@ -245,7 +250,8 @@ services:
       - key: CATALOG_SERVICE_URL
         value: http://globetrotter-catalog-service:3002
       - key: REDIS_URL
-        fromRedis:
+        fromService:
+          type: redis
           name: globetrotter-redis
           property: connectionString
 
@@ -283,7 +289,8 @@ services:
           name: globetrotter-postgres
           property: port
       - key: REDIS_URL
-        fromRedis:
+        fromService:
+          type: redis
           name: globetrotter-redis
           property: connectionString
       - key: RABBITMQ_URL
