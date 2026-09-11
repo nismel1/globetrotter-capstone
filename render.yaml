@@ -1,20 +1,20 @@
+# ============================================================
+# BASES DE DONNÉES ET CACHE (Blocs natifs Render en dehors de services)
+# ============================================================
+databases:
+  - name: globetrotter-postgres
+    databaseName: globetrotter
+    user: admin
+    plan: free
+
+redis:
+  - name: globetrotter-redis
+    plan: free
+
+# ============================================================
+# SERVICES (Web apps, services privés, background workers)
+# ============================================================
 services:
-  # ============================================================
-  # POSTGRESQL (Natifs Render)
-  # ============================================================
-  - type: db
-    name: globetrotter-postgres
-    plan: free
-    ipAllowList: [] # Sécurité : Accessible uniquement par vos microservices Render
-
-  # ============================================================
-  # REDIS (Natif Render)
-  # ============================================================
-  - type: redis
-    name: globetrotter-redis
-    plan: free
-    ipAllowList: []
-
   # ============================================================
   # RABBITMQ
   # ============================================================
@@ -22,8 +22,6 @@ services:
     name: globetrotter-rabbitmq
     env: docker
     dockerfilePath: Dockerfile
-    # Note: Si vous utilisez l'image officielle, spécifiez-la dans votre Dockerfile local
-    # ou utilisez une offre externe comme CloudAMQP pour rester sur l'offre gratuite.
     plan: free
     envVars:
       - key: RABBITMQ_DEFAULT_USER
@@ -37,27 +35,12 @@ services:
   - type: web
     name: globetrotter-osrm
     env: docker
-    plan: free # Attention : OSRM consomme beaucoup de RAM selon la carte chargée
-
-  # ============================================================
-  # ELASTICSEARCH
-  # ============================================================
-  - type: web
-    name: globetrotter-elasticsearch
-    env: docker
     plan: free
-    envVars:
-      - key: discovery.type
-        value: single-node
-      - key: xpack.security.enabled
-        value: "false"
-      - key: ES_JAVA_OPTS
-        value: "-Xms256m -Xmx256m" # Réduit pour l'offre gratuite
 
   # ============================================================
   # AUTH SERVICE
   # ============================================================
-  - type: pserv # Private Service (invisible depuis l'extérieur)
+  - type: pserv
     name: globetrotter-auth-service
     env: docker
     rootDir: backend/auth-service
@@ -130,8 +113,6 @@ services:
         fromRedis:
           name: globetrotter-redis
           property: connectionString
-      - key: ELASTICSEARCH_URL
-        value: http://globetrotter-elasticsearch:9200
 
   # ============================================================
   # ITINERARY SERVICE
@@ -255,7 +236,7 @@ services:
       - key: PORT
         value: 3006
       - key: OPENROUTER_API_KEY
-        sync: false # À renseigner manuellement dans l'interface Render
+        sync: false
       - key: JWT_SECRET
         fromService:
           type: web
@@ -263,8 +244,6 @@ services:
           property: env:JWT_SECRET
       - key: CATALOG_SERVICE_URL
         value: http://globetrotter-catalog-service:3002
-      - key: ELASTICSEARCH_URL
-        value: http://globetrotter-elasticsearch:9200
       - key: REDIS_URL
         fromRedis:
           name: globetrotter-redis
@@ -342,3 +321,13 @@ services:
           property: user
       - key: DB_PASSWORD
         fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
