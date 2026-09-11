@@ -14,7 +14,7 @@ envVarGroups:
   - name: globetrotter-shared-secrets
     envVars:
       - key: JWT_SECRET
-        sync: false # Saisie manuelle unique sur votre dashboard Render lors du premier déploiement
+        sync: false # À renseigner une seule fois sur le dashboard Render
 
 # ============================================================
 # SERVICES (Web apps, services privés, Redis, RabbitMQ)
@@ -31,18 +31,19 @@ services:
         description: Interne Render
 
   # ============================================================
-  # RABBITMQ
+  # RABBITMQ (Correction : Utilisation de l'image officielle)
   # ============================================================
   - type: web
     name: globetrotter-rabbitmq
-    env: docker
-    dockerfilePath: Dockerfile
+    env: image                     # <-- Correction : Plus besoin de Dockerfile local
+    image:
+      url: rabbitmq:3-management   # <-- Version officielle stable incluant l'interface de gestion
     plan: free
     envVars:
       - key: RABBITMQ_DEFAULT_USER
-        sync: false
+        value: globetrotter_admin  # <-- Votre premier paramètre (User)
       - key: RABBITMQ_DEFAULT_PASS
-        generateValue: true
+        generateValue: true        # <-- Votre deuxième paramètre (Mot de passe généré automatiquement)
 
   # ============================================================
   # OSRM (Calcul d'itinéraires)
@@ -61,7 +62,7 @@ services:
     rootDir: backend/auth-service
     plan: free
     envVars:
-      - fromGroup: globetrotter-shared-secrets # Correction ici : Injection propre du groupe
+      - fromGroup: globetrotter-shared-secrets
       - key: NODE_ENV
         value: production
       - key: PORT
@@ -232,8 +233,9 @@ services:
         fromDatabase:
           name: globetrotter-postgres
           property: port
+      # Correction de l'URL sécurisée pour s'authentifier auprès de RabbitMQ
       - key: RABBITMQ_URL
-        value: amqp://globetrotter-rabbitmq:5672
+        value: amqp://globetrotter_admin:${RABBITMQ_DEFAULT_PASS}@globetrotter-rabbitmq:5672
 
   # ============================================================
   # CHATBOT SERVICE
@@ -244,7 +246,7 @@ services:
     rootDir: backend/chatbot-service
     plan: free
     envVars:
-      - fromGroup: globetrotter-shared-secrets # Correction ici
+      - fromGroup: globetrotter-shared-secrets
       - key: NODE_ENV
         value: production
       - key: PORT
@@ -297,8 +299,9 @@ services:
           type: redis
           name: globetrotter-redis
           property: connectionString
+      # Correction de l'URL sécurisée pour s'authentifier auprès de RabbitMQ
       - key: RABBITMQ_URL
-        value: amqp://globetrotter-rabbitmq:5672
+        value: amqp://globetrotter_admin:${RABBITMQ_DEFAULT_PASS}@globetrotter-rabbitmq:5672
 
   # ============================================================
   # MESSAGE SERVICE
@@ -309,7 +312,7 @@ services:
     rootDir: backend/message-service
     plan: free
     envVars:
-      - fromGroup: globetrotter-shared-secrets # Correction ici
+      - fromGroup: globetrotter-shared-secrets
       - key: NODE_ENV
         value: production
       - key: PORT
@@ -330,11 +333,3 @@ services:
         fromDatabase:
           name: globetrotter-postgres
           property: password
-      - key: DB_NAME
-        fromDatabase:
-          name: globetrotter-postgres
-          property: database
-      - key: DB_PORT
-        fromDatabase:
-          name: globetrotter-postgres
-          property: port
