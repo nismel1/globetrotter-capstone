@@ -1,5 +1,5 @@
 # ============================================================
-# BASES DE DONNÉES (Seul bloc natif externe accepté)
+# BASES DE DONNÉES (Bloc natif externe)
 # ============================================================
 databases:
   - name: globetrotter-postgres
@@ -8,15 +8,27 @@ databases:
     plan: free
 
 # ============================================================
+# GROUPES DE VARIABLES D'ENVIRONNEMENT PARTAGÉES
+# ============================================================
+envVarGroups:
+  - name: globetrotter-shared-secrets
+    envVars:
+      - key: JWT_SECRET
+        sync: false # Vous pourrez saisir la valeur une seule fois sur le dashboard Render
+
+# ============================================================
 # SERVICES (Web apps, services privés, Redis, RabbitMQ)
 # ============================================================
 services:
   # ============================================================
-  # REDIS (Correction : Déclaré en tant que service avec type: redis)
+  # REDIS (Correction 1 : Ajout de la ipAllowList obligatoire)
   # ============================================================
   - type: redis
     name: globetrotter-redis
     plan: free
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: Interne Render
 
   # ============================================================
   # RABBITMQ
@@ -48,16 +60,13 @@ services:
     env: docker
     rootDir: backend/auth-service
     plan: free
+    envVarGroups:
+      - name: globetrotter-shared-secrets # Correction 2 : Récupère JWT_SECRET d'ici
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3001
-      - key: JWT_SECRET
-        fromService:
-          type: web
-          name: globetrotter-api-gateway
-          property: env:JWT_SECRET
       - key: DB_HOST
         fromDatabase:
           name: globetrotter-postgres
@@ -235,6 +244,8 @@ services:
     env: docker
     rootDir: backend/chatbot-service
     plan: free
+    envVarGroups:
+      - name: globetrotter-shared-secrets # Correction 2 : Récupère JWT_SECRET d'ici
     envVars:
       - key: NODE_ENV
         value: production
@@ -242,11 +253,6 @@ services:
         value: 3006
       - key: OPENROUTER_API_KEY
         sync: false
-      - key: JWT_SECRET
-        fromService:
-          type: web
-          name: globetrotter-api-gateway
-          property: env:JWT_SECRET
       - key: CATALOG_SERVICE_URL
         value: http://globetrotter-catalog-service:3002
       - key: REDIS_URL
@@ -304,6 +310,8 @@ services:
     env: docker
     rootDir: backend/message-service
     plan: free
+    envVarGroups:
+      - name: globetrotter-shared-secrets # Correction 2 : Récupère JWT_SECRET d'ici
     envVars:
       - key: NODE_ENV
         value: production
@@ -313,11 +321,6 @@ services:
         sync: false
       - key: ALLOWED_ORIGINS
         value: "*"
-      - key: JWT_SECRET
-        fromService:
-          type: web
-          name: globetrotter-api-gateway
-          property: env:JWT_SECRET
       - key: DB_HOST
         fromDatabase:
           name: globetrotter-postgres
