@@ -14,10 +14,10 @@ envVarGroups:
   - name: globetrotter-shared-secrets
     envVars:
       - key: JWT_SECRET
-        sync: false # À renseigner une seule fois sur le dashboard Render
+        sync: false
 
 # ============================================================
-# SERVICES (Web apps, services privés, Redis, RabbitMQ)
+# SERVICES (Tous configurés en 'type: web' pour être gratuits)
 # ============================================================
 services:
   # ============================================================
@@ -31,19 +31,19 @@ services:
         description: Interne Render
 
   # ============================================================
-  # RABBITMQ (Correction : Utilisation de l'image officielle)
+  # RABBITMQ
   # ============================================================
   - type: web
     name: globetrotter-rabbitmq
-    env: image                     # <-- Correction : Plus besoin de Dockerfile local
+    env: image
     image:
-      url: rabbitmq:3-management   # <-- Version officielle stable incluant l'interface de gestion
+      url: rabbitmq:3-management
     plan: free
     envVars:
       - key: RABBITMQ_DEFAULT_USER
-        value: globetrotter_admin  # <-- Votre premier paramètre (User)
+        value: globetrotter_admin
       - key: RABBITMQ_DEFAULT_PASS
-        generateValue: true        # <-- Votre deuxième paramètre (Mot de passe généré automatiquement)
+        generateValue: true
 
   # ============================================================
   # OSRM (Calcul d'itinéraires)
@@ -56,7 +56,7 @@ services:
   # ============================================================
   # AUTH SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web pour la compatibilité plan free
     name: globetrotter-auth-service
     env: docker
     rootDir: backend/auth-service
@@ -91,7 +91,7 @@ services:
   # ============================================================
   # CATALOG SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web
     name: globetrotter-catalog-service
     env: docker
     rootDir: backend/catalog-service
@@ -130,7 +130,7 @@ services:
   # ============================================================
   # ITINERARY SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web
     name: globetrotter-itinerary-service
     env: docker
     rootDir: backend/itinerary-service
@@ -164,7 +164,7 @@ services:
   # ============================================================
   # RECOMMENDATION SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web
     name: globetrotter-recommendation-service
     env: docker
     rootDir: backend/recommendation-service
@@ -203,7 +203,7 @@ services:
   # ============================================================
   # ANALYTICS SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web
     name: globetrotter-analytics-service
     env: docker
     rootDir: backend/analytics-service
@@ -233,14 +233,13 @@ services:
         fromDatabase:
           name: globetrotter-postgres
           property: port
-      # Correction de l'URL sécurisée pour s'authentifier auprès de RabbitMQ
       - key: RABBITMQ_URL
         value: amqp://globetrotter_admin:${RABBITMQ_DEFAULT_PASS}@globetrotter-rabbitmq:5672
 
   # ============================================================
   # CHATBOT SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web
     name: globetrotter-chatbot-service
     env: docker
     rootDir: backend/chatbot-service
@@ -264,7 +263,7 @@ services:
   # ============================================================
   # GROUP SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web
     name: globetrotter-group-service
     env: docker
     rootDir: backend/group-service
@@ -299,14 +298,13 @@ services:
           type: redis
           name: globetrotter-redis
           property: connectionString
-      # Correction de l'URL sécurisée pour s'authentifier auprès de RabbitMQ
       - key: RABBITMQ_URL
         value: amqp://globetrotter_admin:${RABBITMQ_DEFAULT_PASS}@globetrotter-rabbitmq:5672
 
   # ============================================================
   # MESSAGE SERVICE
   # ============================================================
-  - type: pserv
+  - type: web # <-- Remplacé pserv par web
     name: globetrotter-message-service
     env: docker
     rootDir: backend/message-service
@@ -333,3 +331,11 @@ services:
         fromDatabase:
           name: globetrotter-postgres
           property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
