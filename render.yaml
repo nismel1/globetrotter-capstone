@@ -27,7 +27,7 @@ services:
     name: globetrotter-api-gateway
     env: docker
     rootDir: backend/api-gateway
-    plan: free
+    #plan: free
     envVars:
       - fromGroup: globetrotter-shared-secrets
       - key: NODE_ENV
@@ -59,7 +59,7 @@ services:
     env: static
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-    plan: free
+    #plan: free
     envVars:
       - key: VITE_API_URL
         fromService:
