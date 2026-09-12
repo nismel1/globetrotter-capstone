@@ -26,7 +26,7 @@ services:
   - type: web
     name: globetrotter-api-gateway
     env: docker
-    rootDir: backend/api-gateway # <-- Ajustez si le dossier s'appelle différemment
+    rootDir: backend/api-gateway
     plan: free
     envVars:
       - fromGroup: globetrotter-shared-secrets
@@ -34,7 +34,6 @@ services:
         value: production
       - key: PORT
         value: 8080
-      # On passe les URLs internes des microservices à la Gateway pour les redirections :
       - key: AUTH_SERVICE_URL
         value: http://globetrotter-auth-service:3001
       - key: CATALOG_SERVICE_URL
@@ -45,22 +44,21 @@ services:
         value: http://globetrotter-recommendation-service:3004
       - key: ANALYTICS_SERVICE_URL
         value: http://globetrotter-analytics-service:3005
-      - key: CHATBOT SERVICE URL
+      - key: CHATBOT_SERVICE_URL # <-- CORRIGÉ : Espaces remplacés par des '_'
         value: http://globetrotter-chatbot-service:3006
       - key: GROUP_SERVICE_URL
         value: http://globetrotter-group-service:3007
       - key: MESSAGE_SERVICE_URL
         value: http://globetrotter-message-service:3008
 
-  
   # ============================================================
-  # FRONTEND (Site Statique - Corrigé avec la bonne syntaxe)
+  # FRONTEND (Site Statique)
   # ============================================================
   - type: web
     name: globetrotter-frontend
-    env: static # <-- Correction : C'est ici qu'on définit le type statique sur Render
+    env: static
     buildCommand: npm install && npm run build
-    staticPublishPath: dist ## <-- Mettre 'build' si vous n'utilisez pas Vite (ex: Create React App)
+    staticPublishPath: dist
     plan: free
     envVars:
       - key: VITE_API_URL
@@ -284,7 +282,6 @@ services:
           property: port
       - key: RABBITMQ_URL
         value: amqp://globetrotter_admin:${RABBITMQ_DEFAULT_PASS}@globetrotter-rabbitmq:5672
-
   # ============================================================
   # CHATBOT SERVICE
   # ============================================================
@@ -335,3 +332,44 @@ services:
           name: globetrotter-postgres
           property: password
       - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
+
+  # ============================================================
+  # MESSAGE SERVICE
+  # ============================================================
+  - type: web
+    name: globetrotter-message-service
+    env: docker
+    rootDir: backend/message-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3008
+      - key: DB_HOST
+        fromDatabase:
+          name: globetrotter-postgres
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: globetrotter-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: globetrotter-postgres
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: globetrotter-postgres
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: globetrotter-postgres
+          property: port
