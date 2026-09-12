@@ -60,7 +60,7 @@ services:
     name: globetrotter-frontend
     env: static # <-- Correction : C'est ici qu'on définit le type statique sur Render
     buildCommand: npm install && npm run build
-    publishDir: dist # <-- Mettre 'build' si vous n'utilisez pas Vite (ex: Create React App)
+    staticPublishPath: dist ## <-- Mettre 'build' si vous n'utilisez pas Vite (ex: Create React App)
     plan: free
     envVars:
       - key: VITE_API_URL
