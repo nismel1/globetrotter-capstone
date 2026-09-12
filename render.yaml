@@ -17,9 +17,56 @@ envVarGroups:
         sync: false
 
 # ============================================================
-# SERVICES (Tous configurés en 'type: web' pour être gratuits)
+# SERVICES
 # ============================================================
 services:
+  # ============================================================
+  # API GATEWAY (Le point d'entrée public de votre Backend)
+  # ============================================================
+  - type: web
+    name: globetrotter-api-gateway
+    env: docker
+    rootDir: backend/api-gateway # <-- Ajustez si le dossier s'appelle différemment
+    plan: free
+    envVars:
+      - fromGroup: globetrotter-shared-secrets
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      # On passe les URLs internes des microservices à la Gateway pour les redirections :
+      - key: AUTH_SERVICE_URL
+        value: http://globetrotter-auth-service:3001
+      - key: CATALOG_SERVICE_URL
+        value: http://globetrotter-catalog-service:3002
+      - key: ITINERARY_SERVICE_URL
+        value: http://globetrotter-itinerary-service:3003
+      - key: RECOMMENDATION_SERVICE_URL
+        value: http://globetrotter-recommendation-service:3004
+      - key: ANALYTICS_SERVICE_URL
+        value: http://globetrotter-analytics-service:3005
+      - key: CHATBOT SERVICE URL
+        value: http://globetrotter-chatbot-service:3006
+      - key: GROUP_SERVICE_URL
+        value: http://globetrotter-group-service:3007
+      - key: MESSAGE_SERVICE_URL
+        value: http://globetrotter-message-service:3008
+
+  # ============================================================
+  # FRONTEND (Site Statique - Déploiement ultra-rapide)
+  # ============================================================
+  - type: static
+    name: globetrotter-frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist # <-- Mettre 'build' si vous utilisez Create React App au lieu de Vite
+    plan: free
+    envVars:
+      - key: VITE_API_URL # Variable pour que le front sache où est la Gateway
+        fromService:
+          type: web
+          name: globetrotter-api-gateway
+          property: host
+
   # ============================================================
   # REDIS
   # ============================================================
@@ -35,9 +82,8 @@ services:
   # ============================================================
   - type: web
     name: globetrotter-rabbitmq
-    env: image
-    image:
-      url: rabbitmq:3-management
+    env: docker
+    dockerfilePath: Dockerfile.rabbitmq
     plan: free
     envVars:
       - key: RABBITMQ_DEFAULT_USER
@@ -46,7 +92,7 @@ services:
         generateValue: true
 
   # ============================================================
-  # OSRM (Calcul d'itinéraires)
+  # OSRM
   # ============================================================
   - type: web
     name: globetrotter-osrm
@@ -57,7 +103,7 @@ services:
   # ============================================================
   # AUTH SERVICE
   # ============================================================
-  - type: web # <-- Remplacé pserv par web pour la compatibilité plan free
+  - type: web
     name: globetrotter-auth-service
     env: docker
     rootDir: backend/auth-service
@@ -92,7 +138,7 @@ services:
   # ============================================================
   # CATALOG SERVICE
   # ============================================================
-  - type: web # <-- Remplacé pserv par web
+  - type: web
     name: globetrotter-catalog-service
     env: docker
     rootDir: backend/catalog-service
@@ -131,7 +177,7 @@ services:
   # ============================================================
   # ITINERARY SERVICE
   # ============================================================
-  - type: web # <-- Remplacé pserv par web
+  - type: web
     name: globetrotter-itinerary-service
     env: docker
     rootDir: backend/itinerary-service
@@ -165,7 +211,7 @@ services:
   # ============================================================
   # RECOMMENDATION SERVICE
   # ============================================================
-  - type: web # <-- Remplacé pserv par web
+  - type: web
     name: globetrotter-recommendation-service
     env: docker
     rootDir: backend/recommendation-service
@@ -204,7 +250,7 @@ services:
   # ============================================================
   # ANALYTICS SERVICE
   # ============================================================
-  - type: web # <-- Remplacé pserv par web
+  - type: web
     name: globetrotter-analytics-service
     env: docker
     rootDir: backend/analytics-service
@@ -240,7 +286,7 @@ services:
   # ============================================================
   # CHATBOT SERVICE
   # ============================================================
-  - type: web # <-- Remplacé pserv par web
+  - type: web
     name: globetrotter-chatbot-service
     env: docker
     rootDir: backend/chatbot-service
@@ -264,7 +310,7 @@ services:
   # ============================================================
   # GROUP SERVICE
   # ============================================================
-  - type: web # <-- Remplacé pserv par web
+  - type: web
     name: globetrotter-group-service
     env: docker
     rootDir: backend/group-service
@@ -287,56 +333,3 @@ services:
           name: globetrotter-postgres
           property: password
       - key: DB_NAME
-        fromDatabase:
-          name: globetrotter-postgres
-          property: database
-      - key: DB_PORT
-        fromDatabase:
-          name: globetrotter-postgres
-          property: port
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: globetrotter-redis
-          property: connectionString
-      - key: RABBITMQ_URL
-        value: amqp://globetrotter_admin:${RABBITMQ_DEFAULT_PASS}@globetrotter-rabbitmq:5672
-
-  # ============================================================
-  # MESSAGE SERVICE
-  # ============================================================
-  - type: web # <-- Remplacé pserv par web
-    name: globetrotter-message-service
-    env: docker
-    rootDir: backend/message-service
-    plan: free
-    envVars:
-      - fromGroup: globetrotter-shared-secrets
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 3008
-      - key: INTERNAL_SERVICE_KEY
-        sync: false
-      - key: ALLOWED_ORIGINS
-        value: "*"
-      - key: DB_HOST
-        fromDatabase:
-          name: globetrotter-postgres
-          property: host
-      - key: DB_USER
-        fromDatabase:
-          name: globetrotter-postgres
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: globetrotter-postgres
-          property: password
-      - key: DB_NAME
-        fromDatabase:
-          name: globetrotter-postgres
-          property: database
-      - key: DB_PORT
-        fromDatabase:
-          name: globetrotter-postgres
-          property: port
