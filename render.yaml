@@ -50,8 +50,11 @@ services:
   # ============================================================
   - type: web
     name: globetrotter-osrm
-    env: docker
+    env: image
+    image:
+    url: osrm/osrm-backend:latest
     plan: free
+
 
   # ============================================================
   # AUTH SERVICE
