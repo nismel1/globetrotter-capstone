@@ -50,11 +50,9 @@ services:
   # ============================================================
   - type: web
     name: globetrotter-osrm
-    env: image
-    image:
-      imageRepo: osrm/osrm-backend:latest # <-- Évite l'erreur de Dockerfile manquant
+    env: docker
+    dockerfilePath: Dockerfile.osrm
     plan: free
-
 
   # ============================================================
   # AUTH SERVICE
