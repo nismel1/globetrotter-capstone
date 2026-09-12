@@ -52,7 +52,7 @@ services:
     name: globetrotter-osrm
     env: image
     image:
-    url: osrm/osrm-backend:latest
+      imageRepo: osrm/osrm-backend:latest # <-- Évite l'erreur de Dockerfile manquant
     plan: free
 
 
