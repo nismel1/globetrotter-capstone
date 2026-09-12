@@ -52,16 +52,18 @@ services:
       - key: MESSAGE_SERVICE_URL
         value: http://globetrotter-message-service:3008
 
+  
   # ============================================================
-  # FRONTEND (Site Statique - Déploiement ultra-rapide)
+  # FRONTEND (Site Statique - Corrigé avec la bonne syntaxe)
   # ============================================================
-  - type: static
+  - type: web
     name: globetrotter-frontend
+    env: static # <-- Correction : C'est ici qu'on définit le type statique sur Render
     buildCommand: npm install && npm run build
-    publishDir: dist # <-- Mettre 'build' si vous utilisez Create React App au lieu de Vite
+    publishDir: dist # <-- Mettre 'build' si vous n'utilisez pas Vite (ex: Create React App)
     plan: free
     envVars:
-      - key: VITE_API_URL # Variable pour que le front sache où est la Gateway
+      - key: VITE_API_URL
         fromService:
           type: web
           name: globetrotter-api-gateway
