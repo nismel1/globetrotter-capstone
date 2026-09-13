@@ -353,7 +353,13 @@ services:
   - type: web
     name: globetrotter-message-service
     env: docker
-   
+    rootDir: backend/message-service
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3008
       - key: DB_HOST
         fromDatabase:
           name: globetrotter-postgres
